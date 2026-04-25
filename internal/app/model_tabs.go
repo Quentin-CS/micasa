@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/micasa-dev/micasa/internal/data"
+	"github.com/micasa-dev/micasa/internal/i18n"
 )
 
 func (m *Model) activeTab() *Tab {
@@ -379,7 +380,7 @@ func (m *Model) closeDetail() {
 			if tab := m.effectiveTab(); tab != nil && tab.Kind == tabMaintenance {
 				tab.ColCursor = int(maintenanceColLast)
 				m.updateTabViewport(tab)
-				m.setStatusInfo("Last serviced date synced from service log.")
+				m.setStatusInfo(i18n.Get().LastServicedDateSynced())
 			}
 		}
 	}

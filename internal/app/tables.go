@@ -12,6 +12,7 @@ import (
 
 	"charm.land/bubbles/v2/table"
 	"github.com/micasa-dev/micasa/internal/data"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"github.com/micasa-dev/micasa/internal/locale"
 )
 
@@ -61,7 +62,7 @@ func NewTabs() []Tab {
 	return []Tab{
 		{
 			Kind:    tabProjects,
-			Name:    "Projects",
+			Name:    i18n.Get().Projects(),
 			Handler: newProjectHandler(),
 			Specs:   projectSpecs,
 			Table:   newTable(specsToColumns(projectSpecs)),
@@ -75,7 +76,7 @@ func NewTabs() []Tab {
 		},
 		{
 			Kind:    tabMaintenance,
-			Name:    "Maintenance",
+			Name:    i18n.Get().Maintenance(),
 			Handler: newMaintenanceHandler(),
 			Specs:   maintenanceSpecs,
 			Table:   newTable(specsToColumns(maintenanceSpecs)),
@@ -90,14 +91,14 @@ func NewTabs() []Tab {
 		},
 		{
 			Kind:    tabAppliances,
-			Name:    "Appliances",
+			Name:    tabAppliances.String(),
 			Handler: newApplianceHandler(),
 			Specs:   applianceSpecs,
 			Table:   newTable(specsToColumns(applianceSpecs)),
 		},
 		{
 			Kind:    tabVendors,
-			Name:    "Vendors",
+			Name:    tabVendors.String(),
 			Handler: newVendorHandler(),
 			Specs:   vendorSpecs,
 			Table:   newTable(specsToColumns(vendorSpecs)),
@@ -362,12 +363,13 @@ func idColumnSpec() columnSpec {
 
 func specsToColumns(specs []columnSpec) []table.Column {
 	cols := make([]table.Column, 0, len(specs))
+	lang := i18n.Get()
 	for _, spec := range specs {
 		width := spec.Min
 		if width <= 0 {
 			width = 6
 		}
-		cols = append(cols, table.Column{Title: spec.Title, Width: width})
+		cols = append(cols, table.Column{Title: lang.TranslateColumnTitle(spec.Title), Width: width})
 	}
 	return cols
 }

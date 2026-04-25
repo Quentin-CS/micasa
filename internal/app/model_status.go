@@ -9,6 +9,7 @@ import (
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
+	"github.com/micasa-dev/micasa/internal/i18n"
 )
 
 // handleConfirmDiscard processes keys while the "discard unsaved changes?"
@@ -97,7 +98,7 @@ func (m *Model) toggleDeleteSelected() {
 	}
 	meta, ok := m.selectedRowMeta()
 	if !ok {
-		m.setStatusError("Nothing selected.")
+		m.setStatusError(i18n.Get().NothingSelected())
 		return
 	}
 	if meta.Deleted {
@@ -109,9 +110,9 @@ func (m *Model) toggleDeleteSelected() {
 			tab.LastDeleted = nil
 		}
 		if tab.Kind == tabIncidents {
-			m.setStatusInfo("Reopened.")
+			m.setStatusInfo(i18n.Get().Reopened())
 		} else {
-			m.setStatusInfo("Restored.")
+			m.setStatusInfo(i18n.Get().Restored())
 		}
 		m.surfaceError(m.reloadEffectiveTab())
 		return
@@ -125,9 +126,9 @@ func (m *Model) toggleDeleteSelected() {
 		tab.ShowDeleted = true
 	}
 	if tab.Kind == tabIncidents {
-		m.setStatusInfo("Resolved. Press d to reopen.")
+		m.setStatusInfo(i18n.Get().ResolvedWithReopen())
 	} else {
-		m.setStatusInfo("Deleted. Press d to restore.")
+		m.setStatusInfo(i18n.Get().DeletedWithRestore())
 	}
 	m.surfaceError(m.reloadEffectiveTab())
 }
@@ -146,14 +147,14 @@ func (m *Model) promptHardDelete() {
 	}
 	meta, ok := m.selectedRowMeta()
 	if !ok {
-		m.setStatusError("Nothing selected.")
+		m.setStatusError(i18n.Get().NothingSelected())
 		return
 	}
 	if !meta.Deleted {
 		if tab.Kind == tabIncidents {
-			m.setStatusError("Resolve the incident first (d), then permanently delete (D).")
+			m.setStatusError(i18n.Get().ResolveIncidentFirstThenDel())
 		} else {
-			m.setStatusError("Delete the item first (d), then permanently delete (D).")
+			m.setStatusError(i18n.Get().DeleteItemFirstThenDelete())
 		}
 		return
 	}
@@ -176,7 +177,7 @@ func (m *Model) handleConfirmHardDelete(msg tea.KeyPressMsg) {
 			m.setStatusError(err.Error())
 			return
 		}
-		m.setStatusInfo("Permanently deleted.")
+		m.setStatusInfo(i18n.Get().PermanentlyDeleted())
 		m.surfaceError(m.reloadEffectiveTab())
 	case key.Matches(msg, m.keys.ConfirmNo):
 		m.confirm = confirmNone
@@ -188,7 +189,7 @@ func (m *Model) setStatusInfo(text string) {
 }
 
 func (m *Model) setStatusSaved() {
-	m.setStatusInfo("Saved.")
+	m.setStatusInfo(i18n.Get().Saved())
 }
 
 func (m *Model) setStatusError(text string) {

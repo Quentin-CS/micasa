@@ -11,6 +11,7 @@ import (
 	"charm.land/bubbles/v2/table"
 	"github.com/micasa-dev/micasa/internal/config"
 	"github.com/micasa-dev/micasa/internal/data"
+	"github.com/micasa-dev/micasa/internal/i18n"
 )
 
 // TabHandler encapsulates entity-specific operations for a tab, eliminating
@@ -538,7 +539,7 @@ func newVendorJobsHandler(vendorID string) scopedHandler {
 		inlineEditFn: func(m *Model, id string, col int) error {
 			switch vendorJobsCol(col) {
 			case vendorJobsColItem:
-				m.setStatusInfo("Edit item from the Maintenance tab.")
+				m.setStatusInfo(i18n.Get().EditItemFromMaintenanceTab())
 				return nil
 			case vendorJobsColDate:
 				return m.inlineEditServiceLog(id, serviceLogColDate)

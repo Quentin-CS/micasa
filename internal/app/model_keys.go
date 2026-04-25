@@ -18,6 +18,7 @@ import (
 	"charm.land/lipgloss/v2"
 
 	"github.com/micasa-dev/micasa/internal/data"
+	"github.com/micasa-dev/micasa/internal/i18n"
 )
 
 // handleDashboardKeys intercepts keys that belong to the dashboard (j/k
@@ -253,7 +254,7 @@ func (m *Model) handleNormalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 		}
 		c, ok := m.selectedCell(tab.ColCursor)
 		if !ok || c.Null || c.Value == "" {
-			m.setStatusInfo("Nothing to copy.")
+			m.setStatusInfo(i18n.Get().NothingToCopy())
 			return nil, true
 		}
 		clipValue := c.Value
@@ -429,7 +430,7 @@ func (m *Model) handleNormalEnter() error {
 			if c.LinkID != "" {
 				return m.navigateToLink(spec.Link, c.LinkID)
 			}
-			m.setStatusInfo("Nothing to follow.")
+			m.setStatusInfo(i18n.Get().NothingToFollow())
 		}
 		return nil
 	}
@@ -442,18 +443,18 @@ func (m *Model) handleNormalEnter() error {
 					return m.navigateToLink(&columnLink{TargetTab: target}, c.LinkID)
 				}
 			}
-			m.setStatusInfo("Nothing to follow.")
+			m.setStatusInfo(i18n.Get().NothingToFollow())
 		}
 		return nil
 	}
 
 	// On the Documents tab, hint at the open-file shortcut.
 	if tab.Kind == tabDocuments {
-		m.setStatusInfo("Press o to open.")
+		m.setStatusInfo(i18n.Get().PressOToOpen())
 		return nil
 	}
 
-	m.setStatusInfo("Press i to edit.")
+	m.setStatusInfo(i18n.Get().PressIToEdit())
 	return nil
 }
 

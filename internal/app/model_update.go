@@ -10,6 +10,8 @@ import (
 	"charm.land/bubbles/v2/spinner"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/huh/v2"
+
+	"github.com/micasa-dev/micasa/internal/i18n"
 )
 
 func (m *Model) update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -323,9 +325,9 @@ func (m *Model) updateForm(msg tea.Msg) (tea.Model, tea.Cmd) {
 				syncFilePickerTitle(m.fs.form)
 				syncFilePickerDescription(m.fs.form)
 				if newVal {
-					m.setStatusInfo("Showing hidden files.")
+					m.setStatusInfo(i18n.Get().ShowingHiddenFiles())
 				} else {
-					m.setStatusInfo("Hiding hidden files.")
+					m.setStatusInfo(i18n.Get().HidingHiddenFiles())
 				}
 				return m, fp.Init()
 			}
@@ -375,7 +377,7 @@ func (m *Model) updateForm(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.saveForm()
 	case huh.StateAborted:
 		if m.fs.formKind() == formHouse && !m.hasHouse {
-			m.setStatusError("House profile required.")
+			m.setStatusError(i18n.Get().HouseProfileRequired())
 			m.startHouseForm()
 			return m, m.formInitCmd()
 		}

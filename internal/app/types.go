@@ -13,6 +13,7 @@ import (
 	"charm.land/huh/v2"
 	"github.com/micasa-dev/micasa/internal/crypto"
 	"github.com/micasa-dev/micasa/internal/extract"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"github.com/micasa-dev/micasa/internal/llm"
 )
 
@@ -126,21 +127,22 @@ const (
 )
 
 func (k TabKind) String() string {
+	lang := i18n.Get()
 	switch k {
 	case tabProjects:
-		return "Projects"
+		return lang.Projects()
 	case tabQuotes:
-		return "Quotes"
+		return lang.Quotes()
 	case tabMaintenance:
-		return "Maintenance"
+		return lang.Maintenance()
 	case tabIncidents:
-		return "Incidents"
+		return lang.Incidents()
 	case tabAppliances:
-		return "Appliances"
+		return lang.Appliances()
 	case tabVendors:
-		return "Vendors"
+		return lang.Vendors()
 	case tabDocuments:
-		return "Docs"
+		return lang.Documents()
 	}
 	panic(fmt.Sprintf("unhandled TabKind: %d", k))
 }

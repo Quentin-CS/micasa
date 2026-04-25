@@ -21,6 +21,7 @@ import (
 	"github.com/micasa-dev/micasa/internal/config"
 	"github.com/micasa-dev/micasa/internal/data"
 	"github.com/micasa-dev/micasa/internal/extract"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"github.com/spf13/cobra"
 )
 
@@ -104,6 +105,12 @@ func extractExitCode(err error) int {
 }
 
 func main() {
+	// Initialize i18n (language detection) at startup.
+	if err := i18n.Init(); err != nil {
+		fmt.Fprintf(os.Stderr, "warning: failed to initialize i18n: %v\n", err)
+		// Non-fatal error - continues with default (English)
+	}
+
 	root := newRootCmd()
 	if err := fang.Execute(
 		context.Background(),

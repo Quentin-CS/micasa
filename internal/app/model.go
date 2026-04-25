@@ -24,6 +24,7 @@ import (
 	"github.com/micasa-dev/micasa/internal/config"
 	"github.com/micasa-dev/micasa/internal/data"
 	"github.com/micasa-dev/micasa/internal/extract"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"github.com/micasa-dev/micasa/internal/llm"
 	"github.com/micasa-dev/micasa/internal/locale"
 	"github.com/micasa-dev/micasa/internal/sync"
@@ -511,7 +512,7 @@ func (m *Model) navigateToLink(link *columnLink, targetID string) error {
 		return errors.New("target tab not found")
 	}
 	if !selectRowByID(tab, targetID) {
-		m.setStatusError(fmt.Sprintf("Linked item %s not found (deleted?).", targetID))
+		m.setStatusError(fmt.Sprintf(i18n.Get().LinkedItemNotFound(), targetID))
 	}
 	return nil
 }
@@ -548,9 +549,9 @@ func (m *Model) toggleShowDeleted() {
 	tab.ShowDeleted = !tab.ShowDeleted
 	tab.showDeletedExplicit = true
 	if tab.ShowDeleted {
-		m.setStatusInfo("Deleted shown.")
+		m.setStatusInfo(i18n.Get().DeletedShown())
 	} else {
-		m.setStatusInfo("Deleted hidden.")
+		m.setStatusInfo(i18n.Get().DeletedHidden())
 	}
 	m.surfaceError(m.reloadEffectiveTab())
 }
@@ -581,7 +582,7 @@ func (m *Model) toggleSettledFilter() bool {
 		// Turn off: clear status column pins.
 		clearPinsForColumn(tab, col)
 		m.refreshTable(tab)
-		m.setStatusInfo("Settled shown.")
+		m.setStatusInfo(i18n.Get().SettledShown())
 	} else {
 		// Turn on: pin all active (non-settled) statuses, activate filter.
 		for _, status := range activeProjectStatuses {
@@ -589,7 +590,7 @@ func (m *Model) toggleSettledFilter() bool {
 		}
 		tab.FilterActive = true
 		m.refreshTable(tab)
-		m.setStatusInfo("Settled hidden.")
+		m.setStatusInfo(i18n.Get().SettledHidden())
 	}
 	return true
 }
@@ -1015,7 +1016,7 @@ func (m *Model) saveForm() tea.Cmd {
 	cmd := m.afterDocumentSaveIfNeeded(kind)
 	m.exitForm()
 	if isFirstHouse {
-		m.setStatusInfo("House set up. Press b/f to switch tabs, i to edit, ? for help.")
+		m.setStatusInfo(i18n.Get().HouseSetup())
 	}
 	return cmd
 }
@@ -1597,9 +1598,9 @@ func (m *Model) togglePinAtCursor() {
 	pinned := togglePin(tab, col, pinValue)
 	m.refreshTable(tab)
 	if pinned {
-		m.setStatusInfo("Pinned.")
+		m.setStatusInfo(i18n.Get().Pinned())
 	} else {
-		m.setStatusInfo("Unpinned.")
+		m.setStatusInfo(i18n.Get().Unpinned())
 	}
 }
 
@@ -1623,7 +1624,7 @@ func (m *Model) clearAllPins() {
 	}
 	clearPins(tab)
 	m.refreshTable(tab)
-	m.setStatusInfo("Pins cleared.")
+	m.setStatusInfo(i18n.Get().Cleared())
 }
 
 func (m *Model) toggleFilterInvert() {
@@ -1650,7 +1651,7 @@ func (m *Model) hideCurrentColumn() {
 		return
 	}
 	if visibleCount(tab.Specs) <= 1 {
-		m.setStatusError("Cannot hide the last visible column.")
+		m.setStatusError(i18n.Get().CannotHideLastColumn())
 		return
 	}
 	tab.Specs[col].HideOrder = nextHideOrder(tab.Specs)
@@ -1685,7 +1686,7 @@ func (m *Model) showAllColumns() {
 	}
 	if changed {
 		m.updateTabViewport(tab)
-		m.setStatusInfo("All columns visible.")
+		m.setStatusInfo(i18n.Get().AllColumnsVisible())
 	}
 }
 

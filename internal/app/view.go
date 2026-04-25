@@ -13,6 +13,7 @@ import (
 	glamourstyles "charm.land/glamour/v2/styles"
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"golang.org/x/term"
 )
 
@@ -619,6 +620,17 @@ func (m *Model) centerPanel(panel string, minPadTop int) string {
 	return b.String()
 }
 
+// translateSpecTitles translates column titles from English to the current language.
+func translateSpecTitles(specs []columnSpec) []columnSpec {
+	lang := i18n.Get()
+	translated := make([]columnSpec, len(specs))
+	for i, spec := range specs {
+		translated[i] = spec
+		translated[i].Title = lang.TranslateColumnTitle(spec.Title)
+	}
+	return translated
+}
+
 // tableView orchestrates the full table rendering: visible projection,
 // column sizing, horizontal scroll viewport, header/divider/rows, and
 // hidden-column badge line.
@@ -636,6 +648,7 @@ func (m *Model) tableView(tab *Tab) string {
 		return ""
 	}
 	headerSpecs := annotateMoneyHeaders(vp.Specs, m.cur)
+	headerSpecs = translateSpecTitles(headerSpecs)
 	header := renderHeaderRow(
 		headerSpecs,
 		vp.Widths,

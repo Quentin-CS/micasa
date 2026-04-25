@@ -21,6 +21,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"github.com/micasa-dev/micasa/internal/data"
 	"github.com/micasa-dev/micasa/internal/extract"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"github.com/micasa-dev/micasa/internal/llm"
 	"github.com/micasa-dev/micasa/internal/locale"
 )
@@ -627,7 +628,7 @@ func (m *Model) handleExtractionProgress(msg extractionProgressMsg) tea.Cmd {
 		}
 		ex.Done = true
 		if m.isBgExtraction(ex) {
-			m.setStatusError("Extraction failed: " + ex.Filename)
+			m.setStatusError(i18n.Get().ExtractionFailed() + ex.Filename)
 		}
 		return nil
 	}
@@ -687,7 +688,7 @@ func (m *Model) handleExtractionProgress(msg extractionProgressMsg) tea.Cmd {
 
 	ex.Done = true
 	if m.isBgExtraction(ex) {
-		m.setStatusInfo("Extracted: " + ex.Filename)
+		m.setStatusInfo(i18n.Get().Extracted() + " " + ex.Filename)
 	}
 	return nil
 }
@@ -734,7 +735,7 @@ func (m *Model) handleExtractionLLMPing(msg extractionLLMPingMsg) {
 			ex.Done = true
 			ex.advanceCursor()
 			if m.isBgExtraction(ex) {
-				m.setStatusInfo(fmt.Sprintf("Extracted: %s (LLM skipped)", ex.Filename))
+				m.setStatusInfo(i18n.Get().Extracted() + " " + ex.Filename + " (LLM skipped)")
 			}
 		}
 	}
@@ -775,7 +776,7 @@ func (m *Model) handleExtractionLLMChunk(msg extractionLLMChunkMsg) tea.Cmd {
 		ex.Done = true
 		ex.advanceCursor()
 		if m.isBgExtraction(ex) {
-			m.setStatusError("Extraction failed: " + ex.Filename)
+			m.setStatusError(i18n.Get().ExtractionFailed() + ex.Filename)
 		}
 		return nil
 	}
@@ -822,9 +823,9 @@ func (m *Model) handleExtractionLLMChunk(msg extractionLLMChunkMsg) tea.Cmd {
 		ex.advanceCursor()
 		if m.isBgExtraction(ex) {
 			if ex.HasError {
-				m.setStatusError("Extraction failed: " + ex.Filename)
+				m.setStatusError(i18n.Get().ExtractionFailed() + ex.Filename)
 			} else {
-				m.setStatusInfo("Extracted: " + ex.Filename)
+				m.setStatusInfo(i18n.Get().Extracted() + " " + ex.Filename)
 			}
 		}
 		return nil
