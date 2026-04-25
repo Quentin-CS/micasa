@@ -437,39 +437,40 @@ func (m *Model) startMaintenanceForm() error {
 		return fmt.Errorf("appliances: %w", err)
 	}
 	appOpts := applianceOptions(appliances)
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Item")).
+				Title(requiredTitle(lang.FldItem())).
 				Value(&values.Name).
 				Validate(requiredText("item")),
 			huh.NewSelect[string]().
-				Title("Category").
+				Title(lang.FldCategory()).
 				Options(catOptions...).
 				Value(&values.CategoryID),
 			huh.NewSelect[string]().
-				Title("Season").
+				Title(lang.FldSeason()).
 				Options(seasonOptions()...).
 				Value(&values.Season),
 			huh.NewSelect[string]().
-				Title("Appliance").
+				Title(lang.FldAppliance()).
 				Options(appOpts...).
 				Value(&values.ApplianceID),
 			huh.NewSelect[scheduleType]().
-				Title("Schedule").
+				Title(lang.FldSchedule()).
 				Options(scheduleTypeOptions()...).
 				Value(&values.ScheduleType),
 		),
 		huh.NewGroup(
 			huh.NewInput().
-				Title("Interval").
-				Placeholder("6m").
+				Title(lang.FldInterval()).
+				Placeholder(lang.Ph6m()).
 				Value(&values.IntervalMonths).
 				Validate(optionalInterval()),
 		).WithHideFunc(func() bool { return values.ScheduleType != schedInterval }),
 		huh.NewGroup(
 			huh.NewInput().
-				Title("Due date (YYYY-MM-DD)").
+				Title(lang.FldDueDate()).
 				Value(&values.DueDate).
 				Validate(optionalDate("due date")),
 		).WithHideFunc(func() bool { return values.ScheduleType != schedDueDate }),
@@ -901,11 +902,12 @@ func vendorOpts(noneLabel string, vendors []data.Vendor) []huh.Option[string] {
 
 func (m *Model) startApplianceForm() {
 	values := &applianceFormData{}
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Name")).
-				Placeholder("Kitchen Refrigerator").
+				Title(requiredTitle(lang.FldName())).
+				Placeholder(lang.PhRefrigerator()).
 				Value(&values.Name).
 				Validate(requiredText("name")),
 		),
@@ -1711,7 +1713,8 @@ func (m *Model) openNotesEdit(id string, fieldPtr *string, values formData) {
 // Separated from openNotesEdit so it can be reused when reopening after an
 // external editor session.
 func (m *Model) openNotesTextarea(fieldPtr *string, values formData) {
-	field := huh.NewText().Title("Notes").Value(fieldPtr)
+	lang := i18n.Get()
+	field := huh.NewText().Title(lang.FldNotes()).Value(fieldPtr)
 	form := huh.NewForm(huh.NewGroup(field))
 	m.activateForm(form, values)
 	m.fs.formHasRequired = false
@@ -2378,10 +2381,11 @@ func intToString(value int) string {
 func (m *Model) startDocumentForm(entityKind string) error {
 	values := &documentFormData{}
 	scoped := entityKind != ""
+	lang := i18n.Get()
 
 	fields := []huh.Field{
 		huh.NewInput().
-			Title(requiredTitle("Title")).
+			Title(requiredTitle(lang.FldTitle())).
 			Value(&values.Title).
 			Validate(requiredText("title")),
 	}
@@ -2393,7 +2397,7 @@ func (m *Model) startDocumentForm(entityKind string) error {
 		}
 		fields = append(fields,
 			huh.NewSelect[entityRef]().
-				Title("Entity").
+				Title(lang.FldEntity()).
 				Height(10).
 				Options(entityOpts...).
 				Value(&values.EntityRef),
@@ -2401,9 +2405,9 @@ func (m *Model) startDocumentForm(entityKind string) error {
 	}
 
 	fields = append(fields,
-		m.newDocumentFilePicker("File to attach").
+		m.newDocumentFilePicker(lang.FldFileToAttach()).
 			Value(&values.FilePath),
-		huh.NewText().Title("Notes").Value(&values.Notes),
+		huh.NewText().Title(lang.FldNotes()).Value(&values.Notes),
 	)
 
 	form := huh.NewForm(huh.NewGroup(fields...))
@@ -2416,9 +2420,10 @@ func (m *Model) startDocumentForm(entityKind string) error {
 // submit, making this the fast path for ingesting files.
 func (m *Model) startQuickDocumentForm() {
 	values := &documentFormData{DeferCreate: true}
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
-			m.newDocumentFilePicker("File to attach").
+			m.newDocumentFilePicker(lang.FldFileToAttach()).
 				Value(&values.FilePath),
 		),
 	)
@@ -2438,9 +2443,10 @@ func (m *Model) startEditDocumentForm(id string) error {
 }
 
 func (m *Model) openEditDocumentForm(values *documentFormData, scoped bool) error {
+	lang := i18n.Get()
 	fields := []huh.Field{
 		huh.NewInput().
-			Title(requiredTitle("Title")).
+			Title(requiredTitle(lang.FldTitle())).
 			Value(&values.Title).
 			Validate(requiredText("title")),
 	}
@@ -2452,7 +2458,7 @@ func (m *Model) openEditDocumentForm(values *documentFormData, scoped bool) erro
 		}
 		fields = append(fields,
 			huh.NewSelect[entityRef]().
-				Title("Entity").
+				Title(lang.FldEntity()).
 				Height(10).
 				Options(entityOpts...).
 				Value(&values.EntityRef),
@@ -2460,9 +2466,9 @@ func (m *Model) openEditDocumentForm(values *documentFormData, scoped bool) erro
 	}
 
 	fields = append(fields,
-		m.newDocumentFilePicker("Replacement file").
+		m.newDocumentFilePicker(lang.FldReplacementFile()).
 			Value(&values.FilePath),
-		huh.NewText().Title("Notes").Value(&values.Notes),
+		huh.NewText().Title(lang.FldNotes()).Value(&values.Notes),
 	)
 
 	form := huh.NewForm(huh.NewGroup(fields...))
@@ -2658,8 +2664,9 @@ func (m *Model) inlineEditDocument(id string, col documentCol) error {
 		if loadErr != nil {
 			return loadErr
 		}
+		lang := i18n.Get()
 		field := huh.NewSelect[entityRef]().
-			Title("Entity").
+			Title(lang.FldEntity()).
 			Height(10).
 			Options(entityOpts...).
 			Value(&values.EntityRef)
