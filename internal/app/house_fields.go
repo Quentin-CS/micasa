@@ -6,6 +6,7 @@ package app
 import (
 	"charm.land/huh/v2"
 	"github.com/micasa-dev/micasa/internal/data"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"github.com/micasa-dev/micasa/internal/locale"
 )
 
@@ -27,15 +28,16 @@ var houseSectionOrder = []houseSection{
 }
 
 func (s houseSection) title() string {
+	lang := i18n.Get()
 	switch s {
 	case houseSectionIdentity:
-		return "Basics"
+		return lang.SecBasics()
 	case houseSectionStructure:
-		return "Structure"
+		return lang.SecStructure()
 	case houseSectionUtilities:
-		return "Utilities"
+		return lang.SecUtilities()
 	case houseSectionFinancial:
-		return "Financial"
+		return lang.SecFinancial()
 	default:
 		return ""
 	}
@@ -78,7 +80,7 @@ func houseFieldDefs() []houseFieldDef {
 			key: "nickname", label: "Name", section: houseSectionIdentity,
 			build: func(_ *Model, v *string) huh.Field {
 				return huh.NewInput().
-					Title(requiredTitle("Nickname")).
+					Title(requiredTitle(i18n.Get().FldNickname())).
 					Description("Ex: Primary Residence").
 					Value(v).
 					Validate(requiredText("nickname"))
@@ -92,7 +94,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "postal_code", label: "ZIP", section: houseSectionIdentity,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Postal code").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldPostalCode()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.PostalCode
@@ -103,7 +105,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "address_line1", label: "Addr 1", section: houseSectionIdentity,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Address line 1").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldAddressLine1()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.AddressLine1
@@ -114,7 +116,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "address_line2", label: "Addr 2", section: houseSectionIdentity,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Address line 2").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldAddressLine2()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.AddressLine2
@@ -125,7 +127,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "city", label: "City", section: houseSectionIdentity,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("City").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldCity()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.City
@@ -136,7 +138,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "state", label: "State", section: houseSectionIdentity,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("State").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldState()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.State
@@ -149,8 +151,8 @@ func houseFieldDefs() []houseFieldDef {
 			key: "year_built", label: "Year", section: houseSectionStructure,
 			build: func(_ *Model, v *string) huh.Field {
 				return huh.NewInput().
-					Title("Year built").
-					Placeholder("1998").
+					Title(i18n.Get().FldYearBuilt()).
+					Placeholder(i18n.Get().Ph1998()).
 					Value(v).
 					Validate(optionalInt("year built"))
 			},
@@ -200,8 +202,8 @@ func houseFieldDefs() []houseFieldDef {
 			key: "bedrooms", label: "Bed", section: houseSectionStructure,
 			build: func(_ *Model, v *string) huh.Field {
 				return huh.NewInput().
-					Title("Bedrooms").
-					Placeholder("3").
+					Title(i18n.Get().FldBedrooms()).
+					Placeholder(i18n.Get().Ph3()).
 					Value(v).
 					Validate(optionalInt("bedrooms"))
 			},
@@ -215,8 +217,8 @@ func houseFieldDefs() []houseFieldDef {
 			key: "bathrooms", label: "Bath", section: houseSectionStructure,
 			build: func(_ *Model, v *string) huh.Field {
 				return huh.NewInput().
-					Title("Bathrooms").
-					Placeholder("2.5").
+					Title(i18n.Get().FldBathrooms()).
+					Placeholder(i18n.Get().Ph25()).
 					Value(v).
 					Validate(optionalFloat("bathrooms"))
 			},
@@ -229,7 +231,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "foundation_type", label: "Fndtn", section: houseSectionStructure,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Foundation type").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldFoundationType()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.FoundationType
@@ -240,7 +242,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "wiring_type", label: "Wire", section: houseSectionStructure,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Wiring type").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldWiringType()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.WiringType
@@ -251,7 +253,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "roof_type", label: "Roof", section: houseSectionStructure,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Roof type").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldRoofType()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.RoofType
@@ -262,7 +264,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "exterior_type", label: "Ext", section: houseSectionStructure,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Exterior type").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldExteriorType()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.ExteriorType
@@ -273,7 +275,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "basement_type", label: "Bsmnt", section: houseSectionStructure,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Basement").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldBasement()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				if p.BasementType != "" {
@@ -294,7 +296,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "heating_type", label: "Heat", section: houseSectionUtilities,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Heating type").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldHeatingType()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.HeatingType
@@ -305,7 +307,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "cooling_type", label: "Cool", section: houseSectionUtilities,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Cooling type").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldCoolingType()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.CoolingType
@@ -316,7 +318,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "water_source", label: "Water", section: houseSectionUtilities,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Water source").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldWaterSource()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.WaterSource
@@ -327,7 +329,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "sewer_type", label: "Sewer", section: houseSectionUtilities,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Sewer type").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldSewerType()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.SewerType
@@ -338,7 +340,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "parking_type", label: "Parking", section: houseSectionUtilities,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Parking type").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldParkingType()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.ParkingType
@@ -350,7 +352,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "insurance_carrier", label: "Ins carrier", section: houseSectionFinancial,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Insurance carrier").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldInsCarrier()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.InsuranceCarrier
@@ -361,7 +363,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "insurance_policy", label: "Ins policy", section: houseSectionFinancial,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("Insurance policy").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldInsPolicy()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.InsurancePolicy
@@ -373,7 +375,7 @@ func houseFieldDefs() []houseFieldDef {
 			key: "insurance_renewal", label: "Ins renewal", section: houseSectionFinancial,
 			build: func(_ *Model, v *string) huh.Field {
 				return huh.NewInput().
-					Title("Insurance renewal (YYYY-MM-DD)").
+					Title(i18n.Get().FldInsRenewal()).
 					Value(v).
 					Validate(optionalDate("insurance renewal"))
 			},
@@ -387,8 +389,8 @@ func houseFieldDefs() []houseFieldDef {
 			key: "property_tax", label: "Prop tax", section: houseSectionFinancial,
 			build: func(m *Model, v *string) huh.Field {
 				return huh.NewInput().
-					Title("Property tax (annual)").
-					Placeholder("4200.00").
+					Title(i18n.Get().FldPropertyTax()).
+					Placeholder(i18n.Get().Ph4200()).
 					Value(v).
 					Validate(optionalMoney("property tax", m.cur))
 			},
@@ -401,7 +403,7 @@ func houseFieldDefs() []houseFieldDef {
 		{
 			key: "hoa_name", label: "HOA", section: houseSectionFinancial,
 			build: func(_ *Model, v *string) huh.Field {
-				return huh.NewInput().Title("HOA name").Value(v)
+				return huh.NewInput().Title(i18n.Get().FldHOAName()).Value(v)
 			},
 			get: func(p data.HouseProfile, _ locale.Currency, _ data.UnitSystem) string {
 				return p.HOAName
@@ -413,8 +415,8 @@ func houseFieldDefs() []houseFieldDef {
 			key: "hoa_fee", label: "HOA fee", section: houseSectionFinancial,
 			build: func(m *Model, v *string) huh.Field {
 				return huh.NewInput().
-					Title("HOA fee (monthly)").
-					Placeholder("250.00").
+					Title(i18n.Get().FldHOAFee()).
+					Placeholder(i18n.Get().Ph250()).
 					Value(v).
 					Validate(optionalMoney("HOA fee", m.cur))
 			},

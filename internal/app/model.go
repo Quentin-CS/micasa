@@ -486,7 +486,7 @@ func (m *Model) toggleUnitSystem() {
 	} else {
 		m.unitSystem = data.UnitsImperial
 	}
-	m.setStatusInfo("units: " + m.unitSystem.String())
+	m.setStatusInfo(fmt.Sprintf(i18n.Get().UnitsStatus(), m.unitSystem.String()))
 	if m.store != nil {
 		m.surfaceError(m.store.PutUnitSystem(m.unitSystem))
 	}
@@ -791,7 +791,7 @@ func (m *Model) handlePullProgress(msg pullProgressMsg) tea.Cmd {
 			})
 			m.refreshChatViewport()
 		} else {
-			m.setStatusError(fmt.Sprintf("model pull: %s", msg.Err))
+			m.setStatusError(fmt.Sprintf(i18n.Get().ModelPullError(), msg.Err))
 		}
 		m.resizeTables()
 		return nil
@@ -830,7 +830,7 @@ func (m *Model) handlePullProgress(msg pullProgressMsg) tea.Cmd {
 			m.ex.pendingExtractionDocID = nil
 			doc, err := m.store.GetDocument(docID)
 			if err != nil {
-				m.setStatusError("load document for extraction: " + err.Error())
+				m.setStatusError(fmt.Sprintf(i18n.Get().LoadDocumentForExtraction(), err))
 			} else {
 				return m.startExtractionOverlay(
 					docID, doc.FileName, doc.Data, doc.MIMEType, doc.ExtractedText, doc.ExtractData,
@@ -934,14 +934,16 @@ func (m *Model) afterDocumentSave() tea.Cmd {
 	// Load metadata (no BLOB) to decide whether extraction is needed.
 	meta, err := m.store.GetDocumentMetadata(docID)
 	if err != nil {
-		m.setStatusError("load document for extraction: " + err.Error())
+		m.setStatusError(fmt.Sprintf(i18n.Get().LoadDocumentForExtraction(), err))
 		return nil
 	}
 
 	// Check if LLM extraction is configured and ready.
 	llmReady := m.ex.extractionEnabled && m.extractionLLMClient() != nil && m.ex.extractionReady
 	if m.ex.extractionEnabled && m.ex.extractionClientErr != nil {
-		m.setStatusError("extraction LLM: " + m.ex.extractionClientErr.Error())
+		m.setStatusError(
+			fmt.Sprintf(i18n.Get().ExtractionLLMError(), m.ex.extractionClientErr),
+		)
 	}
 
 	// Determine if async extraction is needed. Skip OCR when the
@@ -957,7 +959,7 @@ func (m *Model) afterDocumentSave() tea.Cmd {
 		if m.ex.extractionEnabled && m.extractionLLMClient() != nil && !m.ex.extractionReady {
 			m.ex.pendingExtractionDocID = &docID
 			if !m.pull.active {
-				m.setStatusInfo("checking extraction model" + symEllipsis)
+				m.setStatusInfo(i18n.Get().CheckingExtractionModel() + symEllipsis)
 				return m.checkExtractionModelCmd()
 			}
 		}
@@ -967,7 +969,7 @@ func (m *Model) afterDocumentSave() tea.Cmd {
 	// Extraction needed -- load the full document with BLOB data.
 	doc, err := m.store.GetDocument(docID)
 	if err != nil {
-		m.setStatusError("load document for extraction: " + err.Error())
+		m.setStatusError(fmt.Sprintf(i18n.Get().LoadDocumentForExtraction(), err))
 		return nil
 	}
 
@@ -1069,7 +1071,7 @@ func (m *Model) saveQuickDocumentDirect() tea.Cmd {
 	m.reloadAfterMutation()
 	m.exitForm()
 	if result.ExtractErr != nil {
-		m.setStatusInfo(fmt.Sprintf("extraction incomplete: %s", result.ExtractErr))
+		m.setStatusInfo(fmt.Sprintf(i18n.Get().ExtractionIncomplete(), result.ExtractErr))
 	}
 	return nil
 }
@@ -1113,7 +1115,7 @@ func (m *Model) saveDeferredDocumentForm() tea.Cmd {
 	}
 	m.ex.extraction.pendingDoc = &doc
 	if result.ExtractErr != nil {
-		m.setStatusInfo(fmt.Sprintf("extraction incomplete: %s", result.ExtractErr))
+		m.setStatusInfo(fmt.Sprintf(i18n.Get().ExtractionIncomplete(), result.ExtractErr))
 	}
 	return cmd
 }
@@ -1824,13 +1826,13 @@ func (m *Model) launchExternalEditor() tea.Cmd {
 
 	f, err := os.CreateTemp("", "micasa-notes-*.txt")
 	if err != nil {
-		m.setStatusError(fmt.Sprintf("create temp file: %s", err))
+		m.setStatusError(fmt.Sprintf(i18n.Get().CreateTempFileError(), err))
 		return nil
 	}
 	if _, err := f.WriteString(*m.fs.notesFieldPtr); err != nil {
 		_ = f.Close()
 		_ = os.Remove(f.Name())
-		m.setStatusError(fmt.Sprintf("write temp file: %s", err))
+		m.setStatusError(fmt.Sprintf(i18n.Get().WriteTempFileError(), err))
 		return nil
 	}
 	_ = f.Close()
@@ -1870,7 +1872,7 @@ func (m *Model) handleEditorFinished(msg editorFinishedMsg) tea.Cmd {
 	defer func() { _ = os.Remove(pe.TempFile) }()
 
 	if msg.Err != nil {
-		m.setStatusError(fmt.Sprintf("editor: %s", msg.Err))
+		m.setStatusError(fmt.Sprintf(i18n.Get().EditorError(), msg.Err))
 		// Reopen textarea with the original text so the user can retry.
 		m.reopenNotesEdit(pe)
 		return m.formInitCmd()
@@ -1878,7 +1880,7 @@ func (m *Model) handleEditorFinished(msg editorFinishedMsg) tea.Cmd {
 
 	content, err := os.ReadFile(pe.TempFile)
 	if err != nil {
-		m.setStatusError(fmt.Sprintf("read temp file: %s", err))
+		m.setStatusError(fmt.Sprintf(i18n.Get().ReadTempFileError(), err))
 		m.reopenNotesEdit(pe)
 		return m.formInitCmd()
 	}

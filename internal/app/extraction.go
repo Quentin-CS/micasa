@@ -264,7 +264,9 @@ func (m *Model) startExtractionOverlay(
 	needsExtract := extract.NeedsOCR(m.ex.extractors, mime)
 	needsLLM := m.extractionLLMClient() != nil
 	if m.ex.extractionEnabled && m.ex.extractionClientErr != nil {
-		m.setStatusError("extraction LLM: " + m.ex.extractionClientErr.Error())
+		m.setStatusError(
+			fmt.Sprintf(i18n.Get().ExtractionLLMError(), m.ex.extractionClientErr),
+		)
 	}
 
 	// Skip OCR when the document already has extracted text from a
@@ -735,7 +737,9 @@ func (m *Model) handleExtractionLLMPing(msg extractionLLMPingMsg) {
 			ex.Done = true
 			ex.advanceCursor()
 			if m.isBgExtraction(ex) {
-				m.setStatusInfo(i18n.Get().Extracted() + " " + ex.Filename + " (LLM skipped)")
+				m.setStatusInfo(
+					i18n.Get().Extracted() + " " + ex.Filename + i18n.Get().LLMSkippedSuffix(),
+				)
 			}
 		}
 	}
@@ -980,9 +984,9 @@ func (m *Model) commitShadowOperations(ex *extractionLogState, ops []extract.Ope
 func (m *Model) toggleExtractionTSV() tea.Cmd {
 	m.ex.ocrTSV = !m.ex.ocrTSV
 	if m.ex.ocrTSV {
-		m.setStatusInfo("layout on")
+		m.setStatusInfo(i18n.Get().LayoutOn())
 	} else {
-		m.setStatusInfo("layout off")
+		m.setStatusInfo(i18n.Get().LayoutOff())
 	}
 	return m.rerunLLMExtraction()
 }
@@ -1249,7 +1253,7 @@ func (m *Model) switchExtractionModel(name string, isLocal bool) tea.Cmd {
 
 	// Model needs pulling -- use the same pull infrastructure.
 	if m.pull.active {
-		m.setStatusError("a model pull is already in progress")
+		m.setStatusError(i18n.Get().ModelPullAlreadyInProgress())
 		return nil
 	}
 	m.pull.display = "checking " + name + symEllipsis

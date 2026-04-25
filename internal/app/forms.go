@@ -19,6 +19,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/micasa-dev/micasa/internal/data"
 	"github.com/micasa-dev/micasa/internal/extract"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"github.com/micasa-dev/micasa/internal/locale"
 )
 
@@ -220,8 +221,7 @@ func (m *Model) startHouseForm() {
 	for _, sec := range houseSectionOrder {
 		g := huh.NewGroup(sectionFields[sec]...).Title(sec.title())
 		if sec == houseSectionIdentity && !m.hasHouse {
-			g.Description(
-				"Only nickname is required -- edit the rest anytime with p (edit mode)")
+			g.Description(i18n.Get().DescOnlyNicknameRequired())
 		}
 		groups = append(groups, g)
 	}
@@ -241,18 +241,19 @@ func (m *Model) startProjectForm() {
 	if len(options) > 0 {
 		values.ProjectTypeID = options[0].Value
 	}
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Title")).
+				Title(requiredTitle(lang.FldTitle())).
 				Value(&values.Title).
 				Validate(requiredText("title")),
 			huh.NewSelect[string]().
-				Title("Project type").
+				Title(lang.FldProjectType()).
 				Options(options...).
 				Value(&values.ProjectTypeID),
 			huh.NewSelect[string]().
-				Title("Status").
+				Title(lang.FldStatus()).
 				Options(statusOptions()...).
 				Value(&values.Status),
 		),
@@ -273,44 +274,45 @@ func (m *Model) startEditProjectForm(id string) error {
 }
 
 func (m *Model) openProjectForm(values *projectFormData, options []huh.Option[string]) {
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Title")).
+				Title(requiredTitle(lang.FldTitle())).
 				Value(&values.Title).
 				Validate(requiredText("title")),
 			huh.NewSelect[string]().
-				Title("Project type").
+				Title(lang.FldProjectType()).
 				Options(options...).
 				Value(&values.ProjectTypeID),
 			huh.NewSelect[string]().
-				Title("Status").
+				Title(lang.FldStatus()).
 				Options(statusOptions()...).
 				Value(&values.Status),
 			huh.NewInput().
-				Title("Budget").
-				Placeholder("1250.00").
+				Title(lang.FldBudget()).
+				Placeholder(lang.Ph1250()).
 				Value(&values.Budget).
 				Validate(optionalMoney("budget", m.cur)),
 			huh.NewInput().
-				Title("Actual cost").
-				Placeholder("1400.00").
+				Title(lang.FldActualCost()).
+				Placeholder(lang.Ph1400()).
 				Value(&values.Actual).
 				Validate(optionalMoney("actual cost", m.cur)),
 		),
 		huh.NewGroup(
 			huh.NewInput().
-				Title("Start date (YYYY-MM-DD)").
+				Title(lang.FldStartDate()).
 				Value(&values.StartDate).
 				Validate(optionalDate("start date")),
 			huh.NewInput().
-				Title("End date (YYYY-MM-DD)").
+				Title(lang.FldEndDate()).
 				Value(&values.EndDate).
 				Validate(endDateAfterStart(&values.StartDate, &values.EndDate)),
 			huh.NewText().
-				Title("Description").
+				Title(lang.FldDescription()).
 				Value(&values.Description),
-		).Title("Timeline"),
+		).Title(lang.SecTimeline()),
 	)
 	m.activateForm(form, values)
 }
@@ -321,24 +323,25 @@ func (m *Model) startQuoteForm() error {
 		return err
 	}
 	if len(projects) == 0 {
-		return errors.New("add a project before adding quotes")
+		return errors.New(i18n.Get().FldProject() + " required")
 	}
 	values := &quoteFormData{}
 	options := projectOptions(projects)
 	values.ProjectID = options[0].Value
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().
-				Title("Project").
+				Title(lang.FldProject()).
 				Options(options...).
 				Value(&values.ProjectID),
 			huh.NewInput().
-				Title(requiredTitle("Vendor name")).
+				Title(requiredTitle(lang.FldVendorName())).
 				Value(&values.VendorName).
 				Validate(requiredText("vendor name")),
 			huh.NewInput().
-				Title(requiredTitle("Total")).
-				Placeholder("3250.00").
+				Title(requiredTitle(lang.FldTotal())).
+				Placeholder(lang.Ph3250()).
 				Value(&values.Total).
 				Validate(requiredMoney(m.cur)),
 		),
@@ -357,7 +360,7 @@ func (m *Model) startEditQuoteForm(id string) error {
 		return err
 	}
 	if len(projects) == 0 {
-		return errors.New("no projects available")
+		return errors.New(i18n.Get().FldProject() + " required")
 	}
 	values := quoteFormValues(quote, m.cur)
 	options := projectOptions(projects)
@@ -367,57 +370,59 @@ func (m *Model) startEditQuoteForm(id string) error {
 }
 
 func (m *Model) openQuoteForm(values *quoteFormData, projectOpts []huh.Option[string]) {
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().
-				Title("Project").
+				Title(lang.FldProject()).
 				Options(projectOpts...).
 				Value(&values.ProjectID),
 			huh.NewInput().
-				Title(requiredTitle("Vendor name")).
+				Title(requiredTitle(lang.FldVendorName())).
 				Value(&values.VendorName).
 				Validate(requiredText("vendor name")),
-			huh.NewInput().Title("Contact name").Value(&values.ContactName),
-			huh.NewInput().Title("Email").Value(&values.Email),
-			huh.NewInput().Title("Phone").Value(&values.Phone),
-			huh.NewInput().Title("Website").Value(&values.Website),
-		).Title("Vendor"),
+			huh.NewInput().Title(lang.FldContactName()).Value(&values.ContactName),
+			huh.NewInput().Title(lang.FldEmail()).Value(&values.Email),
+			huh.NewInput().Title(lang.FldPhone()).Value(&values.Phone),
+			huh.NewInput().Title(lang.FldWebsite()).Value(&values.Website),
+		).Title(lang.SecVendor()),
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Total")).
-				Placeholder("3250.00").
+				Title(requiredTitle(lang.FldTotal())).
+				Placeholder(lang.Ph3250()).
 				Value(&values.Total).
 				Validate(requiredMoney(m.cur)),
 			huh.NewInput().
-				Title("Labor").
-				Placeholder("2000.00").
+				Title(lang.FldLabor()).
+				Placeholder(lang.Ph2000()).
 				Value(&values.Labor).
 				Validate(optionalMoney("labor", m.cur)),
 			huh.NewInput().
-				Title("Materials").
-				Placeholder("1000.00").
+				Title(lang.FldMaterials()).
+				Placeholder(lang.Ph1000()).
 				Value(&values.Materials).
 				Validate(optionalMoney("materials", m.cur)),
 			huh.NewInput().
-				Title("Other").
-				Placeholder("250.00").
+				Title(lang.FldOther()).
+				Placeholder(lang.Ph250()).
 				Value(&values.Other).
 				Validate(optionalMoney("other costs", m.cur)),
 			huh.NewInput().
-				Title("Received date (YYYY-MM-DD)").
+				Title(lang.FldReceivedDate()).
 				Value(&values.ReceivedDate).
 				Validate(optionalDate("received date")),
-			huh.NewText().Title("Notes").Value(&values.Notes),
-		).Title("Quote"),
+			huh.NewText().Title(lang.FldNotes()).Value(&values.Notes),
+		).Title(lang.SecQuote()),
 	)
 	m.activateForm(form, values)
 }
 
 func scheduleTypeOptions() []huh.Option[scheduleType] {
+	lang := i18n.Get()
 	return []huh.Option[scheduleType]{
-		huh.NewOption("None", schedNone),
-		huh.NewOption("Recurring interval", schedInterval),
-		huh.NewOption("Fixed due date", schedDueDate),
+		huh.NewOption(lang.SchedNone(), schedNone),
+		huh.NewOption(lang.SchedRecurring(), schedInterval),
+		huh.NewOption(lang.SchedFixedDue(), schedDueDate),
 	}
 }
 
@@ -429,7 +434,7 @@ func (m *Model) startMaintenanceForm() error {
 	}
 	appliances, err := m.store.ListAppliances(false)
 	if err != nil {
-		return fmt.Errorf("list appliances: %w", err)
+		return fmt.Errorf("appliances: %w", err)
 	}
 	appOpts := applianceOptions(appliances)
 	form := huh.NewForm(
@@ -482,7 +487,7 @@ func (m *Model) startEditMaintenanceForm(id string) error {
 	options := maintenanceOptions(m.maintenanceCategories)
 	appliances, err := m.store.ListAppliances(false)
 	if err != nil {
-		return fmt.Errorf("list appliances: %w", err)
+		return fmt.Errorf("appliances: %w", err)
 	}
 	appOpts := applianceOptions(appliances)
 	m.fs.editID = &id
@@ -495,56 +500,57 @@ func (m *Model) openMaintenanceForm(
 	catOptions []huh.Option[string],
 	appOptions []huh.Option[string],
 ) {
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Item")).
+				Title(requiredTitle(lang.FldItem())).
 				Value(&values.Name).
 				Validate(requiredText("item")),
 			huh.NewSelect[string]().
-				Title("Category").
+				Title(lang.FldCategory()).
 				Options(catOptions...).
 				Value(&values.CategoryID),
 			huh.NewSelect[string]().
-				Title("Season").
+				Title(lang.FldSeason()).
 				Options(seasonOptions()...).
 				Value(&values.Season),
 			huh.NewSelect[string]().
-				Title("Appliance").
+				Title(lang.FldAppliance()).
 				Options(appOptions...).
 				Value(&values.ApplianceID),
 			huh.NewInput().
-				Title("Last serviced (YYYY-MM-DD)").
+				Title(lang.FldLastServiced()).
 				Value(&values.LastServiced).
 				Validate(optionalDate("last serviced")),
 			huh.NewSelect[scheduleType]().
-				Title("Schedule").
+				Title(lang.FldSchedule()).
 				Options(scheduleTypeOptions()...).
 				Value(&values.ScheduleType),
-		).Title("Schedule"),
+		).Title(lang.SecSchedule()),
 		huh.NewGroup(
 			huh.NewInput().
-				Title("Interval").
-				Placeholder("6m").
+				Title(lang.FldInterval()).
+				Placeholder(lang.Ph6m()).
 				Value(&values.IntervalMonths).
 				Validate(optionalInterval()),
 		).WithHideFunc(func() bool { return values.ScheduleType != schedInterval }),
 		huh.NewGroup(
 			huh.NewInput().
-				Title("Due date (YYYY-MM-DD)").
+				Title(lang.FldDueDate()).
 				Value(&values.DueDate).
 				Validate(optionalDate("due date")),
 		).WithHideFunc(func() bool { return values.ScheduleType != schedDueDate }),
 		huh.NewGroup(
-			huh.NewInput().Title("Manual URL").Value(&values.ManualURL),
-			huh.NewText().Title("Manual notes").Value(&values.ManualText),
+			huh.NewInput().Title(lang.FldManualURL()).Value(&values.ManualURL),
+			huh.NewText().Title(lang.FldManualNotes()).Value(&values.ManualText),
 			huh.NewInput().
-				Title("Cost").
-				Placeholder("125.00").
+				Title(lang.FldCost()).
+				Placeholder(lang.Ph125()).
 				Value(&values.Cost).
 				Validate(optionalMoney("cost", m.cur)),
-			huh.NewText().Title("Notes").Value(&values.Notes),
-		).Title("Details"),
+			huh.NewText().Title(lang.FldNotes()).Value(&values.Notes),
+		).Title(lang.SecDetails()),
 	)
 	m.activateForm(form, values)
 }
@@ -554,39 +560,40 @@ func (m *Model) startIncidentForm() error {
 	data.ApplyDefaults(values)
 	appliances, err := m.store.ListAppliances(false)
 	if err != nil {
-		return fmt.Errorf("list appliances: %w", err)
+		return fmt.Errorf("appliances: %w", err)
 	}
 	appOpts := applianceOptions(appliances)
-	vendorOpts := vendorOpts("(none)", m.vendors)
+	lang := i18n.Get()
+	vendorOpts := vendorOpts(lang.OptNone(), m.vendors)
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Title")).
+				Title(requiredTitle(lang.FldTitle())).
 				Value(&values.Title).
 				Validate(requiredText("title")),
 			huh.NewSelect[string]().
-				Title("Severity").
+				Title(lang.FldSeverity()).
 				Options(incidentSeverityOptions()...).
 				Value(&values.Severity),
 			huh.NewInput().
-				Title(requiredTitle("Date noticed")+" (YYYY-MM-DD)").
+				Title(requiredTitle(lang.FldDateNoticed())).
 				Value(&values.DateNoticed).
 				Validate(requiredDate("date noticed")),
 			huh.NewInput().
-				Title("Location").
-				Placeholder("Kitchen").
+				Title(lang.FldLocation()).
+				Placeholder(lang.PhKitchen()).
 				Value(&values.Location),
-		).Title("Details"),
+		).Title(lang.SecDetails()),
 		huh.NewGroup(
 			huh.NewSelect[string]().
-				Title("Appliance").
+				Title(lang.FldAppliance()).
 				Options(appOpts...).
 				Value(&values.ApplianceID),
 			huh.NewSelect[string]().
-				Title("Vendor").
+				Title(lang.FldVendor()).
 				Options(vendorOpts...).
 				Value(&values.VendorID),
-		).Title("Links"),
+		).Title(lang.SecLinks()),
 	)
 	m.activateForm(form, values)
 	return nil
@@ -600,10 +607,11 @@ func (m *Model) startEditIncidentForm(id string) error {
 	values := incidentFormValues(item, m.cur)
 	appliances, err := m.store.ListAppliances(false)
 	if err != nil {
-		return fmt.Errorf("list appliances: %w", err)
+		return fmt.Errorf("appliances: %w", err)
 	}
 	appOpts := applianceOptions(appliances)
-	vendorOpts := vendorOpts("(none)", m.vendors)
+	lang := i18n.Get()
+	vendorOpts := vendorOpts(lang.OptNone(), m.vendors)
 	m.fs.editID = &id
 	m.openIncidentForm(values, appOpts, vendorOpts)
 	return nil
@@ -614,50 +622,51 @@ func (m *Model) openIncidentForm(
 	appOptions []huh.Option[string],
 	vendorOptions []huh.Option[string],
 ) {
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Title")).
+				Title(requiredTitle(lang.FldTitle())).
 				Value(&values.Title).
 				Validate(requiredText("title")),
 			huh.NewSelect[string]().
-				Title("Status").
+				Title(lang.FldStatus()).
 				Options(incidentStatusOptions()...).
 				Value(&values.Status),
 			huh.NewSelect[string]().
-				Title("Severity").
+				Title(lang.FldSeverity()).
 				Options(incidentSeverityOptions()...).
 				Value(&values.Severity),
 			huh.NewInput().
-				Title(requiredTitle("Date noticed")+" (YYYY-MM-DD)").
+				Title(requiredTitle(lang.FldDateNoticed())).
 				Value(&values.DateNoticed).
 				Validate(requiredDate("date noticed")),
 			huh.NewInput().
-				Title("Date resolved (YYYY-MM-DD)").
+				Title(lang.FldDateResolved()).
 				Value(&values.DateResolved).
 				Validate(optionalDate("date resolved")),
 			huh.NewInput().
-				Title("Location").
-				Placeholder("Kitchen").
+				Title(lang.FldLocation()).
+				Placeholder(lang.PhKitchen()).
 				Value(&values.Location),
-		).Title("Details"),
+		).Title(lang.SecDetails()),
 		huh.NewGroup(
 			huh.NewSelect[string]().
-				Title("Appliance").
+				Title(lang.FldAppliance()).
 				Options(appOptions...).
 				Value(&values.ApplianceID),
 			huh.NewSelect[string]().
-				Title("Vendor").
+				Title(lang.FldVendor()).
 				Options(vendorOptions...).
 				Value(&values.VendorID),
 			huh.NewInput().
-				Title("Cost").
-				Placeholder("250.00").
+				Title(lang.FldCost()).
+				Placeholder(lang.Ph250()).
 				Value(&values.Cost).
 				Validate(optionalMoney("cost", m.cur)),
-			huh.NewText().Title("Description").Value(&values.Description),
-			huh.NewText().Title("Notes").Value(&values.Notes),
-		).Title("Context"),
+			huh.NewText().Title(lang.FldDescription()).Value(&values.Description),
+			huh.NewText().Title(lang.FldNotes()).Value(&values.Notes),
+		).Title(lang.SecContext()),
 	)
 	m.activateForm(form, values)
 }
@@ -841,28 +850,31 @@ func coloredOptions(entries []colorEntry) []huh.Option[string] {
 }
 
 func incidentStatusOptions() []huh.Option[string] {
+	lang := i18n.Get()
 	return coloredOptions([]colorEntry{
-		{value: data.IncidentStatusOpen, color: accentPair},
-		{value: data.IncidentStatusInProgress, color: successPair},
-		{value: data.IncidentStatusResolved, color: textDimPair},
+		{value: data.IncidentStatusOpen, color: accentPair, label: lang.StatusOpen()},
+		{value: data.IncidentStatusInProgress, color: successPair, label: lang.StatusInProgress()},
+		{value: data.IncidentStatusResolved, color: textDimPair, label: lang.StatusResolved()},
 	})
 }
 
 func incidentSeverityOptions() []huh.Option[string] {
+	lang := i18n.Get()
 	return coloredOptions([]colorEntry{
-		{value: data.IncidentSeverityUrgent, color: dangerPair},
-		{value: data.IncidentSeveritySoon, color: warningPair},
-		{value: data.IncidentSeverityWhenever, color: textDimPair},
+		{value: data.IncidentSeverityUrgent, color: dangerPair, label: lang.SeverityUrgent()},
+		{value: data.IncidentSeveritySoon, color: warningPair, label: lang.SeveritySoon()},
+		{value: data.IncidentSeverityWhenever, color: textDimPair, label: lang.SeverityWhenever()},
 	})
 }
 
 func seasonOptions() []huh.Option[string] {
+	lang := i18n.Get()
 	return coloredOptions([]colorEntry{
-		{value: "", color: textDimPair, label: "(none)"},
-		{value: data.SeasonSpring, color: successPair},
-		{value: data.SeasonSummer, color: warningPair},
-		{value: data.SeasonFall, color: secondaryPair},
-		{value: data.SeasonWinter, color: accentPair},
+		{value: "", color: textDimPair, label: lang.OptNone()},
+		{value: data.SeasonSpring, color: successPair, label: lang.SeasonSpring()},
+		{value: data.SeasonSummer, color: warningPair, label: lang.SeasonSummer()},
+		{value: data.SeasonFall, color: secondaryPair, label: lang.SeasonFall()},
+		{value: data.SeasonWinter, color: accentPair, label: lang.SeasonWinter()},
 	})
 }
 
@@ -913,34 +925,35 @@ func (m *Model) startEditApplianceForm(id string) error {
 }
 
 func (m *Model) openApplianceForm(values *applianceFormData) {
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Name")).
-				Placeholder("Kitchen Refrigerator").
+				Title(requiredTitle(lang.FldName())).
+				Placeholder(lang.PhRefrigerator()).
 				Value(&values.Name).
 				Validate(requiredText("name")),
-			huh.NewInput().Title("Brand").Value(&values.Brand),
-			huh.NewInput().Title("Model number").Value(&values.ModelNumber),
-			huh.NewInput().Title("Serial number").Value(&values.SerialNumber),
-			huh.NewInput().Title("Location").Placeholder("Kitchen").Value(&values.Location),
-		).Title("Identity"),
+			huh.NewInput().Title(lang.FldBrand()).Value(&values.Brand),
+			huh.NewInput().Title(lang.FldModelNumber()).Value(&values.ModelNumber),
+			huh.NewInput().Title(lang.FldSerialNumber()).Value(&values.SerialNumber),
+			huh.NewInput().Title(lang.FldLocation()).Placeholder(lang.PhKitchen()).Value(&values.Location),
+		).Title(lang.SecIdentity()),
 		huh.NewGroup(
 			huh.NewInput().
-				Title("Purchase date (YYYY-MM-DD)").
+				Title(lang.FldPurchaseDate()).
 				Value(&values.PurchaseDate).
 				Validate(optionalDate("purchase date")),
 			huh.NewInput().
-				Title("Warranty expiry (YYYY-MM-DD)").
+				Title(lang.FldWarrantyExpiry()).
 				Value(&values.WarrantyExpiry).
 				Validate(optionalDate("warranty expiry")),
 			huh.NewInput().
-				Title("Cost").
-				Placeholder("899.00").
+				Title(lang.FldCost()).
+				Placeholder(lang.Ph899()).
 				Value(&values.Cost).
 				Validate(optionalMoney("cost", m.cur)),
-			huh.NewText().Title("Notes").Value(&values.Notes),
-		).Title("Details"),
+			huh.NewText().Title(lang.FldNotes()).Value(&values.Notes),
+		).Title(lang.SecDetails()),
 	)
 	m.activateForm(form, values)
 }
@@ -988,11 +1001,12 @@ func (m *Model) parseApplianceFormData() (data.Appliance, error) {
 
 func (m *Model) startVendorForm() {
 	values := &vendorFormData{}
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Name")).
-				Placeholder("Acme Plumbing").
+				Title(requiredTitle(lang.FldName())).
+				Placeholder(lang.PhAcmePlumbing()).
 				Value(&values.Name).
 				Validate(requiredText("name")),
 		),
@@ -1012,18 +1026,19 @@ func (m *Model) startEditVendorForm(id string) error {
 }
 
 func (m *Model) openVendorForm(values *vendorFormData) {
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Name")).
-				Placeholder("Acme Plumbing").
+				Title(requiredTitle(lang.FldName())).
+				Placeholder(lang.PhAcmePlumbing()).
 				Value(&values.Name).
 				Validate(requiredText("name")),
-			huh.NewInput().Title("Contact name").Value(&values.ContactName),
-			huh.NewInput().Title("Email").Value(&values.Email),
-			huh.NewInput().Title("Phone").Value(&values.Phone),
-			huh.NewInput().Title("Website").Value(&values.Website),
-			huh.NewText().Title("Notes").Value(&values.Notes),
+			huh.NewInput().Title(lang.FldContactName()).Value(&values.ContactName),
+			huh.NewInput().Title(lang.FldEmail()).Value(&values.Email),
+			huh.NewInput().Title(lang.FldPhone()).Value(&values.Phone),
+			huh.NewInput().Title(lang.FldWebsite()).Value(&values.Website),
+			huh.NewText().Title(lang.FldNotes()).Value(&values.Notes),
 		),
 	)
 	m.activateForm(form, values)
@@ -1353,15 +1368,16 @@ func (m *Model) startServiceLogForm(maintenanceItemID string) error {
 		MaintenanceItemID: maintenanceItemID,
 	}
 	data.ApplyDefaults(values)
-	vendorOpts := vendorOpts("Self (homeowner)", m.vendors)
+	lang := i18n.Get()
+	vendorOpts := vendorOpts(lang.OptSelfHomeowner(), m.vendors)
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Date serviced")+" (YYYY-MM-DD)").
+				Title(requiredTitle(lang.FldDateServiced())).
 				Value(&values.ServicedAt).
 				Validate(requiredDate("date serviced")),
 			huh.NewSelect[string]().
-				Title("Performed by").
+				Title(lang.FldPerformedBy()).
 				Options(vendorOpts...).
 				Value(&values.VendorID),
 		),
@@ -1376,7 +1392,8 @@ func (m *Model) startEditServiceLogForm(id string) error {
 		return fmt.Errorf("load service log: %w", err)
 	}
 	values := serviceLogFormValues(entry, m.cur)
-	vendorOpts := vendorOpts("Self (homeowner)", m.vendors)
+	lang := i18n.Get()
+	vendorOpts := vendorOpts(lang.OptSelfHomeowner(), m.vendors)
 	m.fs.editID = &id
 	m.openServiceLogForm(values, vendorOpts)
 	return nil
@@ -1386,22 +1403,23 @@ func (m *Model) openServiceLogForm(
 	values *serviceLogFormData,
 	vendorOpts []huh.Option[string],
 ) {
+	lang := i18n.Get()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title(requiredTitle("Date serviced")+" (YYYY-MM-DD)").
+				Title(requiredTitle(lang.FldDateServiced())).
 				Value(&values.ServicedAt).
 				Validate(requiredDate("date serviced")),
 			huh.NewSelect[string]().
-				Title("Performed by").
+				Title(lang.FldPerformedBy()).
 				Options(vendorOpts...).
 				Value(&values.VendorID),
 			huh.NewInput().
-				Title("Cost").
-				Placeholder("125.00").
+				Title(lang.FldCost()).
+				Placeholder(lang.Ph125()).
 				Value(&values.Cost).
 				Validate(optionalMoney("cost", m.cur)),
-			huh.NewText().Title("Notes").Value(&values.Notes),
+			huh.NewText().Title(lang.FldNotes()).Value(&values.Notes),
 		),
 	)
 	m.activateForm(form, values)
@@ -2102,14 +2120,15 @@ func projectOptions(projects []data.Project) []huh.Option[string] {
 }
 
 func statusOptions() []huh.Option[string] {
+	lang := i18n.Get()
 	return coloredOptions([]colorEntry{
-		{value: data.ProjectStatusIdeating, color: mutedPair},
-		{value: data.ProjectStatusPlanned, color: accentPair},
-		{value: data.ProjectStatusQuoted, color: secondaryPair},
-		{value: data.ProjectStatusInProgress, color: successPair},
-		{value: data.ProjectStatusDelayed, color: warningPair},
-		{value: data.ProjectStatusCompleted, color: textDimPair},
-		{value: data.ProjectStatusAbandoned, color: dangerPair},
+		{value: data.ProjectStatusIdeating, color: mutedPair, label: lang.StatusIdeating()},
+		{value: data.ProjectStatusPlanned, color: accentPair, label: lang.StatusPlanned()},
+		{value: data.ProjectStatusQuoted, color: secondaryPair, label: lang.StatusQuoted()},
+		{value: data.ProjectStatusInProgress, color: successPair, label: lang.StatusUnderway()},
+		{value: data.ProjectStatusDelayed, color: warningPair, label: lang.StatusDelayed()},
+		{value: data.ProjectStatusCompleted, color: textDimPair, label: lang.StatusCompleted()},
+		{value: data.ProjectStatusAbandoned, color: dangerPair, label: lang.StatusAbandoned()},
 	})
 }
 
@@ -2493,7 +2512,7 @@ func (m *Model) submitDocumentForm() error {
 		return err
 	}
 	if result.ExtractErr != nil {
-		m.setStatusInfo(fmt.Sprintf("extraction incomplete: %s", result.ExtractErr))
+		m.setStatusInfo(fmt.Sprintf(i18n.Get().ExtractionIncomplete(), result.ExtractErr))
 	}
 	return nil
 }
@@ -2514,7 +2533,7 @@ func (m *Model) submitScopedDocumentForm(entityKind string, entityID string) err
 		return err
 	}
 	if result.ExtractErr != nil {
-		m.setStatusInfo(fmt.Sprintf("extraction incomplete: %s", result.ExtractErr))
+		m.setStatusInfo(fmt.Sprintf(i18n.Get().ExtractionIncomplete(), result.ExtractErr))
 	}
 	return nil
 }
@@ -2602,7 +2621,7 @@ func (m *Model) showTesseractHint() {
 	if m.store.TesseractHintSeen() {
 		return
 	}
-	m.setStatusInfo("install tesseract for text extraction from scanned docs")
+	m.setStatusInfo(i18n.Get().InstallTesseract())
 	// Best-effort: hint reappears next session if persist fails.
 	_ = m.store.MarkTesseractHintSeen()
 }

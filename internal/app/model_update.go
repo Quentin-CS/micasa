@@ -99,7 +99,7 @@ func (m *Model) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				ex.modelPicker.All = mergeModelLists(typed.Models)
 			} else {
 				ex.modelPicker.All = mergeModelLists(nil)
-				m.setStatusError("list models: " + typed.Err.Error())
+				m.setStatusError(fmt.Sprintf(i18n.Get().ListModelsError(), typed.Err))
 			}
 			refilterModelCompleter(ex.modelPicker, ex.modelFilter, m.extractionModelLabel())
 			return m, nil
@@ -138,12 +138,12 @@ func (m *Model) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleMouseWheel(typed)
 	case openFileResultMsg:
 		if typed.Err != nil {
-			m.setStatusError(fmt.Sprintf("open: %s", typed.Err))
+			m.setStatusError(fmt.Sprintf(i18n.Get().OpenError(), typed.Err))
 		}
 		return m, nil
 	case syncDoneMsg:
 		if typed.BlobErrs > 0 {
-			m.setStatusError(fmt.Sprintf("sync: %d blob error(s)", typed.BlobErrs))
+			m.setStatusError(fmt.Sprintf(i18n.Get().SyncBlobErrors(), typed.BlobErrs))
 		}
 		if typed.Conflicts > 0 {
 			m.syncStatus = syncConflict
@@ -160,7 +160,7 @@ func (m *Model) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case syncErrorMsg:
 		m.syncStatus = syncOffline
-		m.setStatusError(fmt.Sprintf("sync: %s", typed.Err))
+		m.setStatusError(fmt.Sprintf(i18n.Get().SyncError(), typed.Err))
 		return m, nil
 	case syncTickMsg:
 		if m.syncEngine == nil || m.syncStatus == syncSyncing {
@@ -176,7 +176,7 @@ func (m *Model) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, doSync(m.syncCtx, m.syncEngine)
 	case postalCodeLookupMsg:
 		if typed.Err != nil {
-			m.setStatusError(fmt.Sprintf("postal code lookup: %v", typed.Err))
+			m.setStatusError(fmt.Sprintf(i18n.Get().PostalCodeLookupError(), typed.Err))
 			return m, nil
 		}
 		values, ok := m.fs.formData.(*houseFormData)
