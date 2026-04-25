@@ -553,7 +553,7 @@ func newVendorJobsHandler(vendorID string) scopedHandler {
 			return nil
 		},
 		startAddFn: func(_ *Model) error {
-			return errors.New("add service log entries from the Maintenance tab")
+			return errors.New(i18n.Get().ErrAddFromMaintenanceTab())
 		},
 	}
 }

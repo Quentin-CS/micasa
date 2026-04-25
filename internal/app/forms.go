@@ -2199,7 +2199,7 @@ func endDateAfterStart(startDate, endDate *string) func(string) error {
 			return nil //nolint:nilerr // end date format already checked by optionalDate above
 		}
 		if e.Before(*s) {
-			return errors.New("end date must not be before start date")
+			return errors.New(i18n.Get().ValEndDateAfterStart())
 		}
 		return nil
 	}

@@ -48,14 +48,14 @@ func (m *Model) startAddForm() {
 func (m *Model) startEditForm() error {
 	tab := m.effectiveTab()
 	if tab == nil {
-		return errors.New("no active tab")
+		return errors.New(i18n.Get().ErrNoActiveTab())
 	}
 	meta, ok := m.selectedRowMeta()
 	if !ok {
-		return errors.New("nothing selected")
+		return errors.New(i18n.Get().ErrNothingSelected())
 	}
 	if meta.Deleted {
-		return errors.New("cannot edit a deleted item")
+		return errors.New(i18n.Get().ErrCannotEditDeletedItem())
 	}
 	return tab.Handler.StartEditForm(m, meta.ID)
 }
@@ -63,14 +63,14 @@ func (m *Model) startEditForm() error {
 func (m *Model) startCellOrFormEdit() error {
 	tab := m.effectiveTab()
 	if tab == nil {
-		return errors.New("no active tab")
+		return errors.New(i18n.Get().ErrNoActiveTab())
 	}
 	meta, ok := m.selectedRowMeta()
 	if !ok {
-		return errors.New("nothing selected")
+		return errors.New(i18n.Get().ErrNothingSelected())
 	}
 	if meta.Deleted {
-		return errors.New("cannot edit a deleted item")
+		return errors.New(i18n.Get().ErrCannotEditDeletedItem())
 	}
 	col := tab.ColCursor
 	if col < 0 || col >= len(tab.Specs) {

@@ -255,6 +255,25 @@ type translations struct {
 	seasonFall   string
 	seasonWinter string
 
+	// Help labels
+	helpConfirm  string
+	helpCancel   string
+	helpNavigate string
+	helpSection  string
+	helpEdit     string
+	helpClose    string
+	helpNav      string
+	helpToggle   string
+	helpCollapse string
+	helpTabs     string
+
+	// Error messages
+	errNoActiveTab           string
+	errNothingSelected       string
+	errCannotEditDeletedItem string
+	errAddFromMaintenanceTab string
+	errNoTargetTab           string
+
 	// Form descriptions
 	descOnlyNicknameRequired string
 

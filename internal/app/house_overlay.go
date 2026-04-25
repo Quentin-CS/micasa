@@ -12,6 +12,8 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+
+	"github.com/micasa-dev/micasa/internal/i18n"
 )
 
 // houseOverlayState holds cursor and edit state for the house profile overlay.
@@ -288,18 +290,19 @@ func (m *Model) buildHouseOverlay() string {
 	columns := m.houseOverlayColumns(innerW)
 
 	// Hint bar.
+	lang := i18n.Get()
 	var hints string
 	if m.houseOverlay.editing {
 		hints = joinWithSeparator(m.helpSeparator(),
-			m.helpItem(symReturn, "confirm"),
-			m.helpItem(keyEsc, "cancel"),
+			m.helpItem(symReturn, lang.HelpConfirm()),
+			m.helpItem(keyEsc, lang.HelpCancel()),
 		)
 	} else {
 		hints = joinWithSeparator(m.helpSeparator(),
-			m.helpItem(symUp+symDown, "navigate"),
-			m.helpItem(symLeft+symRight, "section"),
-			m.helpItem(symReturn, "edit"),
-			m.helpItem(keyEsc, "close"),
+			m.helpItem(symUp+symDown, lang.HelpNavigate()),
+			m.helpItem(symLeft+symRight, lang.HelpSection()),
+			m.helpItem(symReturn, lang.HelpEdit()),
+			m.helpItem(keyEsc, lang.HelpClose()),
 		)
 	}
 

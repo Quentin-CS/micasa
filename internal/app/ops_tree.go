@@ -18,6 +18,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/micasa-dev/micasa/internal/extract"
+	"github.com/micasa-dev/micasa/internal/i18n"
 )
 
 // Zone ID prefix for clickable tree nodes (expand/collapse toggle).
@@ -427,15 +428,16 @@ func (m *Model) buildOpsTreeOverlay() string {
 	frameW := m.styles.OverlayBox().GetHorizontalFrameSize()
 
 	// Build hint bar early so we can measure it for width calculation.
+	lang := i18n.Get()
 	hintParts := []string{
-		m.helpItem(keyJ+"/"+keyK, "nav"),
-		m.helpItem(symReturn, "toggle"),
-		m.helpItem(keyH, "collapse"),
+		m.helpItem(keyJ+"/"+keyK, lang.HelpNav()),
+		m.helpItem(symReturn, lang.HelpToggle()),
+		m.helpItem(keyH, lang.HelpCollapse()),
 	}
 	if len(tree.previewGroups) > 1 {
-		hintParts = append(hintParts, m.helpItem(keyB+"/"+keyF, "tabs"))
+		hintParts = append(hintParts, m.helpItem(keyB+"/"+keyF, lang.HelpTabs()))
 	}
-	hintParts = append(hintParts, m.helpItem(keyEsc, "close"))
+	hintParts = append(hintParts, m.helpItem(keyEsc, lang.HelpClose()))
 	hints := joinWithSeparator(m.helpSeparator(), hintParts...)
 
 	// Compute content width: widen to fit hint bar and preview tables.

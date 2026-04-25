@@ -204,6 +204,25 @@ var translationsEN = translations{
 	seasonFall:   "Fall",
 	seasonWinter: "Winter",
 
+	// Help labels
+	helpConfirm:  "confirm",
+	helpCancel:   "cancel",
+	helpNavigate: "navigate",
+	helpSection:  "section",
+	helpEdit:     "edit",
+	helpClose:    "close",
+	helpNav:      "nav",
+	helpToggle:   "toggle",
+	helpCollapse: "collapse",
+	helpTabs:     "tabs",
+
+	// Error messages
+	errNoActiveTab:           "no active tab",
+	errNothingSelected:       "nothing selected",
+	errCannotEditDeletedItem: "cannot edit a deleted item",
+	errAddFromMaintenanceTab: "add service log entries from the Maintenance tab",
+	errNoTargetTab:           "target tab not found",
+
 	// Form descriptions
 	descOnlyNicknameRequired: "Only nickname is required -- edit the rest anytime with p (edit mode)",
 

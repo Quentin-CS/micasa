@@ -509,7 +509,7 @@ func (m *Model) navigateToLink(link *columnLink, targetID string) error {
 	m.switchToTab(tabIndex(link.TargetTab))
 	tab := m.activeTab()
 	if tab == nil {
-		return errors.New("target tab not found")
+		return errors.New(i18n.Get().ErrNoTargetTab())
 	}
 	if !selectRowByID(tab, targetID) {
 		m.setStatusError(fmt.Sprintf(i18n.Get().LinkedItemNotFound(), targetID))

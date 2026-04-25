@@ -204,6 +204,25 @@ var translationsFR = translations{
 	seasonFall:   "Automne",
 	seasonWinter: "Hiver",
 
+	// Help labels
+	helpConfirm:  "confirmer",
+	helpCancel:   "annuler",
+	helpNavigate: "naviguer",
+	helpSection:  "section",
+	helpEdit:     "modifier",
+	helpClose:    "fermer",
+	helpNav:      "nav",
+	helpToggle:   "activer",
+	helpCollapse: "réduire",
+	helpTabs:     "onglets",
+
+	// Error messages
+	errNoActiveTab:           "aucun onglet actif",
+	errNothingSelected:       "rien de sélectionné",
+	errCannotEditDeletedItem: "impossible de modifier un élément supprimé",
+	errAddFromMaintenanceTab: "ajoutez les entrées de journal d'entretien depuis l'onglet Maintenance",
+	errNoTargetTab:           "onglet cible non trouvé",
+
 	// Form descriptions
 	descOnlyNicknameRequired: "Seul le surnom est requis -- modifiez le reste à tout moment avec p (mode édition)",
 

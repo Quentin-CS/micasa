@@ -344,6 +344,25 @@ func (l *Language) SeasonSummer() string { return l.t.seasonSummer }
 func (l *Language) SeasonFall() string   { return l.t.seasonFall }
 func (l *Language) SeasonWinter() string { return l.t.seasonWinter }
 
+// Help labels
+func (l *Language) HelpConfirm() string  { return l.t.helpConfirm }
+func (l *Language) HelpCancel() string   { return l.t.helpCancel }
+func (l *Language) HelpNavigate() string { return l.t.helpNavigate }
+func (l *Language) HelpSection() string  { return l.t.helpSection }
+func (l *Language) HelpEdit() string     { return l.t.helpEdit }
+func (l *Language) HelpClose() string    { return l.t.helpClose }
+func (l *Language) HelpNav() string      { return l.t.helpNav }
+func (l *Language) HelpToggle() string   { return l.t.helpToggle }
+func (l *Language) HelpCollapse() string { return l.t.helpCollapse }
+func (l *Language) HelpTabs() string     { return l.t.helpTabs }
+
+// Error messages
+func (l *Language) ErrNoActiveTab() string           { return l.t.errNoActiveTab }
+func (l *Language) ErrNothingSelected() string       { return l.t.errNothingSelected }
+func (l *Language) ErrCannotEditDeletedItem() string { return l.t.errCannotEditDeletedItem }
+func (l *Language) ErrAddFromMaintenanceTab() string { return l.t.errAddFromMaintenanceTab }
+func (l *Language) ErrNoTargetTab() string           { return l.t.errNoTargetTab }
+
 // Form descriptions
 func (l *Language) DescOnlyNicknameRequired() string { return l.t.descOnlyNicknameRequired }
 
