@@ -12,6 +12,9 @@ import (
 	"golang.org/x/text/language"
 )
 
+// platformLocale is provided by locale_darwin.go or locale_other.go and
+// returns the best-guess locale string for the current OS, or "" if unknown.
+
 // Global singleton for the current language instance.
 var globalLang *Language
 
@@ -59,16 +62,24 @@ func (l *Language) SetLanguage(tag language.Tag) {
 	l.t = getTranslations(tag)
 }
 
-// detectSystemLanguage detects the system language from environment variables.
+// detectSystemLanguage detects the system language from environment variables,
+// with a platform-specific fallback for systems (e.g. macOS) where the POSIX
+// locale variables are not set to the user's preferred language.
 func detectSystemLanguage() (language.Tag, error) {
-	// Check LANG, LC_ALL, LC_MESSAGES in order
+	// Environment variables take explicit priority.
 	for _, envVar := range []string{"LC_ALL", "LC_MESSAGES", "LANG"} {
-		if locale := os.Getenv(envVar); locale != "" {
+		locale := os.Getenv(envVar)
+		if locale != "" && locale != "C" && locale != "POSIX" && !strings.HasPrefix(locale, "C.") {
 			return parseLocale(locale)
 		}
 	}
 
-	// Fallback to English
+	// Platform-specific detection (e.g. macOS System Preferences).
+	if locale := platformLocale(); locale != "" {
+		return parseLocale(locale)
+	}
+
+	// Fallback to English.
 	return language.English, nil
 }
 
