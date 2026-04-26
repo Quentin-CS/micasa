@@ -47,9 +47,9 @@ func TestVendorColumnSpecs(t *testing.T) {
 		"Email",
 		"Phone",
 		"Website",
-		"Quotes",
+		tabQuotes.String(),
 		"Jobs",
-		"Docs",
+		tabDocuments.String(),
 	}
 	for i, want := range expected {
 		assert.Equalf(t, want, specs[i].Title, "column %d", i)

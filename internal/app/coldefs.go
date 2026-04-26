@@ -44,7 +44,7 @@ var projectColumnDefs = []columnDef{
 	{
 		"Quotes",
 		columnSpec{
-			Title: tabQuotes.String(),
+			Title: "Quotes",
 			Min:   6,
 			Max:   8,
 			Align: alignRight,
@@ -54,7 +54,7 @@ var projectColumnDefs = []columnDef{
 	{
 		"Docs",
 		columnSpec{
-			Title: tabDocuments.String(),
+			Title: "Docs",
 			Min:   5,
 			Max:   6,
 			Align: alignRight,
@@ -63,7 +63,12 @@ var projectColumnDefs = []columnDef{
 	},
 }
 
-func projectColumnSpecs() []columnSpec { return defsToSpecs(projectColumnDefs) }
+func projectColumnSpecs() []columnSpec {
+	specs := defsToSpecs(projectColumnDefs)
+	specs[projectColQuotes].Title = tabQuotes.String()
+	specs[projectColDocs].Title = tabDocuments.String()
+	return specs
+}
 
 // ---------------------------------------------------------------------------
 // Quote columns
@@ -93,7 +98,7 @@ var quoteColumnDefs = []columnDef{
 	{
 		"Docs",
 		columnSpec{
-			Title: tabDocuments.String(),
+			Title: "Docs",
 			Min:   5,
 			Max:   6,
 			Align: alignRight,
@@ -102,7 +107,11 @@ var quoteColumnDefs = []columnDef{
 	},
 }
 
-func quoteColumnSpecs() []columnSpec { return defsToSpecs(quoteColumnDefs) }
+func quoteColumnSpecs() []columnSpec {
+	specs := defsToSpecs(quoteColumnDefs)
+	specs[quoteColDocs].Title = tabDocuments.String()
+	return specs
+}
 
 // ---------------------------------------------------------------------------
 // Maintenance columns
@@ -127,7 +136,7 @@ var maintenanceColumnDefs = []columnDef{
 	{
 		"Docs",
 		columnSpec{
-			Title: tabDocuments.String(),
+			Title: "Docs",
 			Min:   5,
 			Max:   6,
 			Align: alignRight,
@@ -136,7 +145,11 @@ var maintenanceColumnDefs = []columnDef{
 	},
 }
 
-func maintenanceColumnSpecs() []columnSpec { return defsToSpecs(maintenanceColumnDefs) }
+func maintenanceColumnSpecs() []columnSpec {
+	specs := defsToSpecs(maintenanceColumnDefs)
+	specs[maintenanceColDocs].Title = tabDocuments.String()
+	return specs
+}
 
 // ---------------------------------------------------------------------------
 // Incident columns
@@ -168,7 +181,7 @@ var incidentColumnDefs = []columnDef{
 	{
 		"Docs",
 		columnSpec{
-			Title: tabDocuments.String(),
+			Title: "Docs",
 			Min:   5,
 			Max:   6,
 			Align: alignRight,
@@ -177,7 +190,11 @@ var incidentColumnDefs = []columnDef{
 	},
 }
 
-func incidentColumnSpecs() []columnSpec { return defsToSpecs(incidentColumnDefs) }
+func incidentColumnSpecs() []columnSpec {
+	specs := defsToSpecs(incidentColumnDefs)
+	specs[incidentColDocs].Title = tabDocuments.String()
+	return specs
+}
 
 // ---------------------------------------------------------------------------
 // Appliance columns
@@ -198,7 +215,7 @@ var applianceColumnDefs = []columnDef{
 	{
 		"Docs",
 		columnSpec{
-			Title: tabDocuments.String(),
+			Title: "Docs",
 			Min:   5,
 			Max:   6,
 			Align: alignRight,
@@ -207,7 +224,11 @@ var applianceColumnDefs = []columnDef{
 	},
 }
 
-func applianceColumnSpecs() []columnSpec { return defsToSpecs(applianceColumnDefs) }
+func applianceColumnSpecs() []columnSpec {
+	specs := defsToSpecs(applianceColumnDefs)
+	specs[applianceColDocs].Title = tabDocuments.String()
+	return specs
+}
 
 // ---------------------------------------------------------------------------
 // Vendor columns
@@ -223,7 +244,7 @@ var vendorColumnDefs = []columnDef{
 	{
 		"Quotes",
 		columnSpec{
-			Title: tabQuotes.String(),
+			Title: "Quotes",
 			Min:   6,
 			Max:   8,
 			Align: alignRight,
@@ -234,7 +255,7 @@ var vendorColumnDefs = []columnDef{
 	{
 		"Docs",
 		columnSpec{
-			Title: tabDocuments.String(),
+			Title: "Docs",
 			Min:   5,
 			Max:   6,
 			Align: alignRight,
@@ -243,7 +264,12 @@ var vendorColumnDefs = []columnDef{
 	},
 }
 
-func vendorColumnSpecs() []columnSpec { return defsToSpecs(vendorColumnDefs) }
+func vendorColumnSpecs() []columnSpec {
+	specs := defsToSpecs(vendorColumnDefs)
+	specs[vendorColQuotes].Title = tabQuotes.String()
+	specs[vendorColDocs].Title = tabDocuments.String()
+	return specs
+}
 
 // ---------------------------------------------------------------------------
 // Service log columns
@@ -264,7 +290,7 @@ var serviceLogColumnDefs = []columnDef{
 	{
 		"Docs",
 		columnSpec{
-			Title: tabDocuments.String(),
+			Title: "Docs",
 			Min:   5,
 			Max:   8,
 			Align: alignRight,
@@ -273,7 +299,11 @@ var serviceLogColumnDefs = []columnDef{
 	},
 }
 
-func serviceLogColumnSpecs() []columnSpec { return defsToSpecs(serviceLogColumnDefs) }
+func serviceLogColumnSpecs() []columnSpec {
+	specs := defsToSpecs(serviceLogColumnDefs)
+	specs[serviceLogColDocs].Title = tabDocuments.String()
+	return specs
+}
 
 // ---------------------------------------------------------------------------
 // Vendor jobs columns (service logs scoped to a vendor)

@@ -367,6 +367,82 @@ func (l *Language) HelpToggle() string   { return l.t.helpToggle }
 func (l *Language) HelpCollapse() string { return l.t.helpCollapse }
 func (l *Language) HelpTabs() string     { return l.t.helpTabs }
 
+// Empty state messages
+func (l *Language) EmptyDetailHint() string   { return l.t.emptyDetailHint }
+func (l *Language) EmptyTopLevelHint() string { return l.t.emptyTopLevelHint }
+func (l *Language) EmptyNoDocsYet() string    { return l.t.emptyNoDocsYet }
+func (l *Language) EmptyNoQuotesYet() string  { return l.t.emptyNoQuotesYet }
+
+// Keybinding labels
+func (l *Language) KbQuit() string               { return l.t.kbQuit }
+func (l *Language) KbCancelLLM() string          { return l.t.kbCancelLLM }
+func (l *Language) KbColumns() string            { return l.t.kbColumns }
+func (l *Language) KbFirstLastCol() string       { return l.t.kbFirstLastCol }
+func (l *Language) KbHelp() string               { return l.t.kbHelp }
+func (l *Language) KbHouseProfile() string       { return l.t.kbHouseProfile }
+func (l *Language) KbSwitchTabs() string         { return l.t.kbSwitchTabs }
+func (l *Language) KbFirstLastTab() string       { return l.t.kbFirstLastTab }
+func (l *Language) KbEditMode() string           { return l.t.kbEditMode }
+func (l *Language) KbDrillFollowPreview() string { return l.t.kbDrillFollowPreview }
+func (l *Language) KbSummary() string            { return l.t.kbSummary }
+func (l *Language) KbSortClear() string          { return l.t.kbSortClear }
+func (l *Language) KbToggleSettled() string      { return l.t.kbToggleSettled }
+func (l *Language) KbPinUnpin() string           { return l.t.kbPinUnpin }
+func (l *Language) KbToggleFilter() string       { return l.t.kbToggleFilter }
+func (l *Language) KbClearPinsFilter() string    { return l.t.kbClearPinsFilter }
+func (l *Language) KbInvertFilter() string       { return l.t.kbInvertFilter }
+func (l *Language) KbToggleColVis() string       { return l.t.kbToggleColVis }
+func (l *Language) KbFindColumn() string         { return l.t.kbFindColumn }
+func (l *Language) KbSearchDocs() string         { return l.t.kbSearchDocs }
+func (l *Language) KbOpenDocument() string       { return l.t.kbOpenDocument }
+func (l *Language) KbToggleUnits() string        { return l.t.kbToggleUnits }
+func (l *Language) KbAskLLM() string             { return l.t.kbAskLLM }
+func (l *Language) KbCloseDetailClear() string   { return l.t.kbCloseDetailClear }
+func (l *Language) KbCopyCell() string           { return l.t.kbCopyCell }
+func (l *Language) KbAddEntry() string           { return l.t.kbAddEntry }
+func (l *Language) KbAddDocExtract() string      { return l.t.kbAddDocExtract }
+func (l *Language) KbEditCellRow() string        { return l.t.kbEditCellRow }
+func (l *Language) KbEditRowFull() string        { return l.t.kbEditRowFull }
+func (l *Language) KbDelRestore() string         { return l.t.kbDelRestore }
+func (l *Language) KbPermanentlyDelete() string  { return l.t.kbPermanentlyDelete }
+func (l *Language) KbReExtract() string          { return l.t.kbReExtract }
+func (l *Language) KbShowDeleted() string        { return l.t.kbShowDeleted }
+func (l *Language) KbNavMode() string            { return l.t.kbNavMode }
+func (l *Language) KbSave() string               { return l.t.kbSave }
+func (l *Language) KbCancel() string             { return l.t.kbCancel }
+func (l *Language) KbNextField() string          { return l.t.kbNextField }
+func (l *Language) KbPrevField() string          { return l.t.kbPrevField }
+func (l *Language) KbOpenNotesEditor() string    { return l.t.kbOpenNotesEditor }
+func (l *Language) KbToggleHiddenFiles() string  { return l.t.kbToggleHiddenFiles }
+func (l *Language) KbSendMessage() string        { return l.t.kbSendMessage }
+func (l *Language) KbToggleSQLDisplay() string   { return l.t.kbToggleSQLDisplay }
+func (l *Language) KbPromptHistory() string      { return l.t.kbPromptHistory }
+func (l *Language) KbHideChat() string           { return l.t.kbHideChat }
+func (l *Language) KbAdd() string                { return l.t.kbAdd }
+
+// Status bar labels
+func (l *Language) SbNavBadge() string           { return l.t.sbNavBadge }
+func (l *Language) SbEditBadge() string          { return l.t.sbEditBadge }
+func (l *Language) SbSaved() string              { return l.t.sbSaved }
+func (l *Language) SbUnsaved() string            { return l.t.sbUnsaved }
+func (l *Language) SbDeleteForever() string      { return l.t.sbDeleteForever }
+func (l *Language) SbDiscardChanges() string     { return l.t.sbDiscardChanges }
+func (l *Language) SbDiscard() string            { return l.t.sbDiscard }
+func (l *Language) SbKeepEditing() string        { return l.t.sbKeepEditing }
+func (l *Language) SbPermDeleteEntity() string   { return l.t.sbPermDeleteEntity }
+func (l *Language) SbPermDeleteItem() string     { return l.t.sbPermDeleteItem }
+func (l *Language) SbEditor() string             { return l.t.sbEditor }
+func (l *Language) SbFollowLink() string         { return l.t.sbFollowLink }
+func (l *Language) SbEdit() string               { return l.t.sbEdit }
+func (l *Language) SbEditColon() string          { return l.t.sbEditColon }
+func (l *Language) SbPreview() string            { return l.t.sbPreview }
+func (l *Language) SbOps() string                { return l.t.sbOps }
+func (l *Language) SbDrill() string              { return l.t.sbDrill }
+func (l *Language) SbPressAnyKeyToClose() string { return l.t.sbPressAnyKeyToClose }
+func (l *Language) SbClose() string              { return l.t.sbClose }
+func (l *Language) SbExtracting() string         { return l.t.sbExtracting }
+func (l *Language) SbReady() string              { return l.t.sbReady }
+
 // Error messages
 func (l *Language) ErrNoActiveTab() string           { return l.t.errNoActiveTab }
 func (l *Language) ErrNothingSelected() string       { return l.t.errNothingSelected }

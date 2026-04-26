@@ -44,7 +44,7 @@ func (m *Model) effectiveTab() *Tab {
 // named openXxxDetail helpers and the table-driven openDetailForRow dispatch.
 type detailDef struct {
 	tabKind    TabKind
-	subName    string
+	subName    func() string
 	specs      func() []columnSpec
 	handler    func(parentID string) TabHandler
 	breadcrumb func(m *Model, parentName string) string
@@ -52,9 +52,13 @@ type detailDef struct {
 }
 
 // stdBreadcrumb returns a breadcrumb builder that produces the standard
-// "prefix > parentName > subName" format. Pass "" for subName to omit it.
-func stdBreadcrumb(prefix, subName string) func(*Model, string) string {
+// "prefix > parentName > subName" format. Pass nil or a func returning "" to omit subName.
+func stdBreadcrumb(prefix string, subNameFn func() string) func(*Model, string) string {
 	return func(_ *Model, parentName string) string {
+		subName := ""
+		if subNameFn != nil {
+			subName = subNameFn()
+		}
 		if subName == "" {
 			return prefix + breadcrumbSep + parentName
 		}
@@ -65,7 +69,7 @@ func stdBreadcrumb(prefix, subName string) func(*Model, string) string {
 var (
 	serviceLogDef = detailDef{
 		tabKind: tabMaintenance,
-		subName: "Service Log",
+		subName: func() string { return "Service Log" },
 		specs:   serviceLogColumnSpecs,
 		handler: func(id string) TabHandler { return newServiceLogHandler(id) },
 		breadcrumb: func(m *Model, parentName string) string {
@@ -88,10 +92,10 @@ var (
 	}
 	applianceMaintenanceDef = detailDef{
 		tabKind:    tabAppliances,
-		subName:    "Maintenance",
+		subName:    func() string { return "Maintenance" },
 		specs:      applianceMaintenanceColumnSpecs,
 		handler:    func(id string) TabHandler { return newApplianceMaintenanceHandler(id) },
-		breadcrumb: stdBreadcrumb("Appliances", ""),
+		breadcrumb: stdBreadcrumb("Appliances", nil),
 		getName: func(s *data.Store, id string) (string, error) {
 			a, err := s.GetAppliance(id)
 			if err != nil {
@@ -102,50 +106,50 @@ var (
 	}
 	vendorQuoteDef = detailDef{
 		tabKind:    tabVendors,
-		subName:    tabQuotes.String(),
+		subName:    tabQuotes.String,
 		specs:      vendorQuoteColumnSpecs,
 		handler:    func(id string) TabHandler { return newVendorQuoteHandler(id) },
-		breadcrumb: stdBreadcrumb("Vendors", tabQuotes.String()),
+		breadcrumb: stdBreadcrumb("Vendors", tabQuotes.String),
 		getName:    getVendorName,
 	}
 	vendorJobsDef = detailDef{
 		tabKind:    tabVendors,
-		subName:    "Jobs",
+		subName:    func() string { return "Jobs" },
 		specs:      vendorJobsColumnSpecs,
 		handler:    func(id string) TabHandler { return newVendorJobsHandler(id) },
-		breadcrumb: stdBreadcrumb("Vendors", "Jobs"),
+		breadcrumb: stdBreadcrumb("Vendors", func() string { return "Jobs" }),
 		getName:    getVendorName,
 	}
 	projectQuoteDef = detailDef{
 		tabKind:    tabProjects,
-		subName:    tabQuotes.String(),
+		subName:    tabQuotes.String,
 		specs:      projectQuoteColumnSpecs,
 		handler:    func(id string) TabHandler { return newProjectQuoteHandler(id) },
-		breadcrumb: stdBreadcrumb("Projects", tabQuotes.String()),
+		breadcrumb: stdBreadcrumb("Projects", tabQuotes.String),
 		getName:    getProjectTitle,
 	}
 	projectDocumentDef = detailDef{
 		tabKind:    tabProjects,
-		subName:    tabDocuments.String(),
+		subName:    tabDocuments.String,
 		specs:      entityDocumentColumnSpecs,
 		handler:    func(id string) TabHandler { return newEntityDocumentHandler(data.DocumentEntityProject, id) },
-		breadcrumb: stdBreadcrumb("Projects", tabDocuments.String()),
+		breadcrumb: stdBreadcrumb("Projects", tabDocuments.String),
 		getName:    getProjectTitle,
 	}
 	incidentDocumentDef = detailDef{
 		tabKind:    tabIncidents,
-		subName:    tabDocuments.String(),
+		subName:    tabDocuments.String,
 		specs:      entityDocumentColumnSpecs,
 		handler:    func(id string) TabHandler { return newEntityDocumentHandler(data.DocumentEntityIncident, id) },
-		breadcrumb: stdBreadcrumb("Incidents", tabDocuments.String()),
+		breadcrumb: stdBreadcrumb("Incidents", tabDocuments.String),
 		getName:    getIncidentTitle,
 	}
 	applianceDocumentDef = detailDef{
 		tabKind:    tabAppliances,
-		subName:    tabDocuments.String(),
+		subName:    tabDocuments.String,
 		specs:      entityDocumentColumnSpecs,
 		handler:    func(id string) TabHandler { return newEntityDocumentHandler(data.DocumentEntityAppliance, id) },
-		breadcrumb: stdBreadcrumb("Appliances", tabDocuments.String()),
+		breadcrumb: stdBreadcrumb("Appliances", tabDocuments.String),
 		getName: func(s *data.Store, id string) (string, error) {
 			a, err := s.GetAppliance(id)
 			if err != nil {
@@ -156,7 +160,7 @@ var (
 	}
 	serviceLogDocumentDef = detailDef{
 		tabKind: tabMaintenance,
-		subName: tabDocuments.String(),
+		subName: tabDocuments.String,
 		specs:   entityDocumentColumnSpecs,
 		handler: func(id string) TabHandler {
 			return newEntityDocumentHandler(data.DocumentEntityServiceLog, id)
@@ -176,26 +180,28 @@ var (
 	}
 	maintenanceDocumentDef = detailDef{
 		tabKind:    tabMaintenance,
-		subName:    tabDocuments.String(),
+		subName:    tabDocuments.String,
 		specs:      entityDocumentColumnSpecs,
 		handler:    func(id string) TabHandler { return newEntityDocumentHandler(data.DocumentEntityMaintenance, id) },
-		breadcrumb: stdBreadcrumb("Maintenance", tabDocuments.String()),
+		breadcrumb: stdBreadcrumb("Maintenance", tabDocuments.String),
 		getName:    getMaintenanceName,
 	}
 	quoteDocumentDef = detailDef{
-		tabKind:    tabQuotes,
-		subName:    tabDocuments.String(),
-		specs:      entityDocumentColumnSpecs,
-		handler:    func(id string) TabHandler { return newEntityDocumentHandler(data.DocumentEntityQuote, id) },
-		breadcrumb: stdBreadcrumb("Quotes", tabDocuments.String()),
-		getName:    getQuoteDisplayName,
+		tabKind: tabQuotes,
+		subName: tabDocuments.String,
+		specs:   entityDocumentColumnSpecs,
+		handler: func(id string) TabHandler { return newEntityDocumentHandler(data.DocumentEntityQuote, id) },
+		breadcrumb: func(_ *Model, parentName string) string {
+			return tabQuotes.String() + breadcrumbSep + parentName + breadcrumbSep + tabDocuments.String()
+		},
+		getName: getQuoteDisplayName,
 	}
 	vendorDocumentDef = detailDef{
 		tabKind:    tabVendors,
-		subName:    tabDocuments.String(),
+		subName:    tabDocuments.String,
 		specs:      entityDocumentColumnSpecs,
 		handler:    func(id string) TabHandler { return newEntityDocumentHandler(data.DocumentEntityVendor, id) },
-		breadcrumb: stdBreadcrumb("Vendors", tabDocuments.String()),
+		breadcrumb: stdBreadcrumb("Vendors", tabDocuments.String),
 		getName:    getVendorName,
 	}
 )
@@ -250,7 +256,7 @@ func (m *Model) openDetailFromDef(def detailDef, parentID string, parentName str
 		Breadcrumb:     def.breadcrumb(m, parentName),
 		Tab: Tab{
 			Kind:    def.tabKind,
-			Name:    def.subName,
+			Name:    def.subName(),
 			Handler: def.handler(parentID),
 			Specs:   specs,
 			Table:   newTable(specsToColumns(specs)),
@@ -270,48 +276,54 @@ type detailRoute struct {
 	formKind FormKind
 }
 
-var detailRoutes = []detailRoute{
-	{tabKinds: []TabKind{tabMaintenance, tabAppliances}, colTitle: "Log", def: serviceLogDef},
-	{tabKinds: []TabKind{tabAppliances}, colTitle: "Maint", def: applianceMaintenanceDef},
-	{tabKinds: []TabKind{tabVendors}, colTitle: tabQuotes.String(), def: vendorQuoteDef},
-	{tabKinds: []TabKind{tabVendors}, colTitle: "Jobs", def: vendorJobsDef},
-	{tabKinds: []TabKind{tabProjects}, colTitle: tabQuotes.String(), def: projectQuoteDef},
-	// Handler-scoped document routes: match nested detail views where the
-	// parent tabKind is shared but the handler identifies the entity type.
-	{
-		tabKinds: []TabKind{tabMaintenance, tabAppliances},
-		colTitle: tabDocuments.String(),
-		def:      serviceLogDocumentDef,
-		formKind: formServiceLog,
-	},
-	{
-		tabKinds: []TabKind{tabMaintenance, tabAppliances},
-		colTitle: tabDocuments.String(),
-		def:      maintenanceDocumentDef,
-		formKind: formMaintenance,
-	},
-	{
-		tabKinds: []TabKind{tabQuotes, tabVendors, tabProjects},
-		colTitle: tabDocuments.String(),
-		def:      quoteDocumentDef,
-		formKind: formQuote,
-	},
-	// Generic document routes: match top-level tabs (no formKind filter).
-	{tabKinds: []TabKind{tabProjects}, colTitle: tabDocuments.String(), def: projectDocumentDef},
-	{tabKinds: []TabKind{tabIncidents}, colTitle: tabDocuments.String(), def: incidentDocumentDef},
-	{
-		tabKinds: []TabKind{tabAppliances},
-		colTitle: tabDocuments.String(),
-		def:      applianceDocumentDef,
-	},
-	{tabKinds: []TabKind{tabVendors}, colTitle: tabDocuments.String(), def: vendorDocumentDef},
+// getDetailRoutes returns the detail routes with i18n column titles evaluated
+// at call time rather than package-init time, so language changes take effect.
+func getDetailRoutes() []detailRoute {
+	quotesTitle := tabQuotes.String()
+	docsTitle := tabDocuments.String()
+	return []detailRoute{
+		{tabKinds: []TabKind{tabMaintenance, tabAppliances}, colTitle: "Log", def: serviceLogDef},
+		{tabKinds: []TabKind{tabAppliances}, colTitle: "Maint", def: applianceMaintenanceDef},
+		{tabKinds: []TabKind{tabVendors}, colTitle: quotesTitle, def: vendorQuoteDef},
+		{tabKinds: []TabKind{tabVendors}, colTitle: "Jobs", def: vendorJobsDef},
+		{tabKinds: []TabKind{tabProjects}, colTitle: quotesTitle, def: projectQuoteDef},
+		// Handler-scoped document routes: match nested detail views where the
+		// parent tabKind is shared but the handler identifies the entity type.
+		{
+			tabKinds: []TabKind{tabMaintenance, tabAppliances},
+			colTitle: docsTitle,
+			def:      serviceLogDocumentDef,
+			formKind: formServiceLog,
+		},
+		{
+			tabKinds: []TabKind{tabMaintenance, tabAppliances},
+			colTitle: docsTitle,
+			def:      maintenanceDocumentDef,
+			formKind: formMaintenance,
+		},
+		{
+			tabKinds: []TabKind{tabQuotes, tabVendors, tabProjects},
+			colTitle: docsTitle,
+			def:      quoteDocumentDef,
+			formKind: formQuote,
+		},
+		// Generic document routes: match top-level tabs (no formKind filter).
+		{tabKinds: []TabKind{tabProjects}, colTitle: docsTitle, def: projectDocumentDef},
+		{tabKinds: []TabKind{tabIncidents}, colTitle: docsTitle, def: incidentDocumentDef},
+		{
+			tabKinds: []TabKind{tabAppliances},
+			colTitle: docsTitle,
+			def:      applianceDocumentDef,
+		},
+		{tabKinds: []TabKind{tabVendors}, colTitle: docsTitle, def: vendorDocumentDef},
+	}
 }
 
 // openDetailForRow dispatches a drilldown based on the current tab kind and the
 // column that was activated. Supports nested drilldowns (e.g. Appliance ->
 // Maintenance -> Service Log).
 func (m *Model) openDetailForRow(tab *Tab, rowID string, colTitle string) error {
-	for _, route := range detailRoutes {
+	for _, route := range getDetailRoutes() {
 		if route.colTitle != colTitle {
 			continue
 		}

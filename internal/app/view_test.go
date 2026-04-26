@@ -14,6 +14,7 @@ import (
 	"charm.land/lipgloss/v2"
 	zone "github.com/lrstanley/bubblezone/v2"
 	"github.com/micasa-dev/micasa/internal/data"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"github.com/micasa-dev/micasa/internal/locale"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1105,17 +1106,18 @@ func TestRowCountShowsDeletedCount(t *testing.T) {
 
 func TestEmptyHintPerTab(t *testing.T) {
 	t.Parallel()
+	lang := i18n.Get()
 	tests := []struct {
 		kind    TabKind
 		want    string
 		wantSub string // secondary substring to verify
 	}{
-		{tabProjects, "No projects yet", "edit mode"},
+		{tabProjects, "No projects yet", lang.KbEditMode()},
 		{tabQuotes, "No quotes yet", "Create a project first"},
-		{tabMaintenance, "No maintenance items yet", "edit mode"},
-		{tabIncidents, "No incidents yet", "edit mode"},
-		{tabAppliances, "No appliances yet", "edit mode"},
-		{tabVendors, "No vendors yet", "edit mode"},
+		{tabMaintenance, "No maintenance items yet", lang.KbEditMode()},
+		{tabIncidents, "No incidents yet", lang.KbEditMode()},
+		{tabAppliances, "No appliances yet", lang.KbEditMode()},
+		{tabVendors, "No vendors yet", lang.KbEditMode()},
 		{tabDocuments, "No documents yet", ""},
 	}
 	for _, tt := range tests {
@@ -1134,9 +1136,9 @@ func TestEmptyHintDetailDrilldown(t *testing.T) {
 		subName    string
 		wantSub    string // expected substring like "No docs for this appliance"
 	}{
-		{tabAppliances, tabDocuments.String(), "No docs for this appliance"},
-		{tabProjects, tabDocuments.String(), "No docs for this project"},
-		{tabIncidents, tabDocuments.String(), "No docs for this incident"},
+		{tabAppliances, tabDocuments.String(), "No documents for this appliance"},
+		{tabProjects, tabDocuments.String(), "No documents for this project"},
+		{tabIncidents, tabDocuments.String(), "No documents for this incident"},
 		{tabProjects, tabQuotes.String(), "No quotes for this project"},
 		{tabVendors, tabQuotes.String(), "No quotes for this vendor"},
 		{tabVendors, "Jobs", "No jobs for this vendor"},
@@ -1152,7 +1154,7 @@ func TestEmptyHintDetailDrilldown(t *testing.T) {
 		hint := m.emptyHint(&m.detailStack[0].Tab)
 		assert.Contains(t, hint, tt.wantSub,
 			"parentKind=%s subName=%s", tt.parentKind, tt.subName)
-		assert.Contains(t, hint, "edit mode",
+		assert.Contains(t, hint, i18n.Get().KbEditMode(),
 			"detail hint should include edit-mode guidance")
 	}
 }

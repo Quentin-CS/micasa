@@ -3,7 +3,10 @@
 
 package app
 
-import "charm.land/bubbles/v2/key"
+import (
+	"charm.land/bubbles/v2/key"
+	"github.com/micasa-dev/micasa/internal/i18n"
+)
 
 // AppKeyMap defines all keybindings as structured key.Binding values.
 // Each binding carries the actual keys for dispatch (via key.Matches)
@@ -191,144 +194,148 @@ type AppKeyMap struct {
 }
 
 func newAppKeyMap() AppKeyMap {
+	return newAppKeyMapWithLang(i18n.Get())
+}
+
+func newAppKeyMapWithLang(lang *i18n.Language) AppKeyMap {
 	return AppKeyMap{
 		// Global
-		Quit: key.NewBinding(key.WithKeys(keyCtrlQ), key.WithHelp("ctrl+q", "quit")),
+		Quit: key.NewBinding(key.WithKeys(keyCtrlQ), key.WithHelp("ctrl+q", lang.KbQuit())),
 		Cancel: key.NewBinding(
 			key.WithKeys(keyCtrlC),
-			key.WithHelp("ctrl+c", "cancel LLM operation"),
+			key.WithHelp("ctrl+c", lang.KbCancelLLM()),
 		),
 
 		// Common
 		ColLeft: key.NewBinding(
 			key.WithKeys(keyH, keyLeft),
-			key.WithHelp(keyH+"/"+keyL+"/"+symLeft+"/"+symRight, "columns"),
+			key.WithHelp(keyH+"/"+keyL+"/"+symLeft+"/"+symRight, lang.KbColumns()),
 		),
 		ColRight: key.NewBinding(key.WithKeys(keyL, keyRight)),
 		ColStart: key.NewBinding(
 			key.WithKeys(keyCaret),
-			key.WithHelp(keyCaret+"/"+keyDollar, "first/last column"),
+			key.WithHelp(keyCaret+"/"+keyDollar, lang.KbFirstLastCol()),
 		),
 		ColEnd:      key.NewBinding(key.WithKeys(keyDollar)),
-		Help:        key.NewBinding(key.WithKeys(keyQuestion), key.WithHelp(keyQuestion, "help")),
-		HouseToggle: key.NewBinding(key.WithKeys(keyTab), key.WithHelp("tab", "house profile")),
+		Help:        key.NewBinding(key.WithKeys(keyQuestion), key.WithHelp(keyQuestion, lang.KbHelp())),
+		HouseToggle: key.NewBinding(key.WithKeys(keyTab), key.WithHelp("tab", lang.KbHouseProfile())),
 		MagToggle:   key.NewBinding(key.WithKeys(keyCtrlO)),
 		FgExtract:   key.NewBinding(key.WithKeys(keyCtrlB)),
 
 		// Normal mode
 		TabNext: key.NewBinding(
 			key.WithKeys(keyF),
-			key.WithHelp(keyB+"/"+keyF, "switch tabs"),
+			key.WithHelp(keyB+"/"+keyF, lang.KbSwitchTabs()),
 		),
 		TabPrev: key.NewBinding(key.WithKeys(keyB)),
 		TabFirst: key.NewBinding(
 			key.WithKeys(keyShiftB),
-			key.WithHelp(keyShiftB+"/"+keyShiftF, "first/last tab"),
+			key.WithHelp(keyShiftB+"/"+keyShiftF, lang.KbFirstLastTab()),
 		),
 		TabLast:       key.NewBinding(key.WithKeys(keyShiftF)),
-		EnterEditMode: key.NewBinding(key.WithKeys(keyI), key.WithHelp(keyI, "edit mode")),
+		EnterEditMode: key.NewBinding(key.WithKeys(keyI), key.WithHelp(keyI, lang.KbEditMode())),
 		Enter: key.NewBinding(
 			key.WithKeys(keyEnter),
-			key.WithHelp(symReturn, drilldownArrow+" drill / "+linkArrow+" follow / preview"),
+			key.WithHelp(symReturn, drilldownArrow+" "+lang.KbDrillFollowPreview()),
 		),
-		Dashboard: key.NewBinding(key.WithKeys(keyShiftD), key.WithHelp(keyShiftD, "summary")),
+		Dashboard: key.NewBinding(key.WithKeys(keyShiftD), key.WithHelp(keyShiftD, lang.KbSummary())),
 		Sort: key.NewBinding(
 			key.WithKeys(keyS),
-			key.WithHelp(keyS+"/"+keyShiftS, "sort / clear sorts"),
+			key.WithHelp(keyS+"/"+keyShiftS, lang.KbSortClear()),
 		),
 		SortClear: key.NewBinding(key.WithKeys(keyShiftS)),
 		ToggleSettled: key.NewBinding(
 			key.WithKeys(keyT),
-			key.WithHelp(keyT, "toggle settled projects"),
+			key.WithHelp(keyT, lang.KbToggleSettled()),
 		),
-		FilterPin: key.NewBinding(key.WithKeys(keyN), key.WithHelp(keyN, "pin/unpin")),
+		FilterPin: key.NewBinding(key.WithKeys(keyN), key.WithHelp(keyN, lang.KbPinUnpin())),
 		FilterToggle: key.NewBinding(
 			key.WithKeys(keyShiftN),
-			key.WithHelp(keyShiftN, "toggle filter"),
+			key.WithHelp(keyShiftN, lang.KbToggleFilter()),
 		),
 		FilterClear: key.NewBinding(
 			key.WithKeys(keyCtrlN),
-			key.WithHelp("ctrl+n", "clear pins and filter"),
+			key.WithHelp("ctrl+n", lang.KbClearPinsFilter()),
 		),
 		FilterNegate: key.NewBinding(
 			key.WithKeys(keyBang),
-			key.WithHelp(keyBang, "invert filter"),
+			key.WithHelp(keyBang, lang.KbInvertFilter()),
 		),
 		ColHide: key.NewBinding(
 			key.WithKeys(keyC),
-			key.WithHelp(keyC+"/"+keyShiftC, "toggle column visibility"),
+			key.WithHelp(keyC+"/"+keyShiftC, lang.KbToggleColVis()),
 		),
 		ColShowAll: key.NewBinding(key.WithKeys(keyShiftC)),
 		ColFinder: key.NewBinding(
 			key.WithKeys(keySlash),
-			key.WithHelp(keySlash, "find column"),
+			key.WithHelp(keySlash, lang.KbFindColumn()),
 		),
 		DocSearch: key.NewBinding(
 			key.WithKeys(keyCtrlF),
-			key.WithHelp("ctrl+f", "search documents"),
+			key.WithHelp("ctrl+f", lang.KbSearchDocs()),
 		),
-		DocOpen: key.NewBinding(key.WithKeys(keyO), key.WithHelp(keyO, "open document")),
+		DocOpen: key.NewBinding(key.WithKeys(keyO), key.WithHelp(keyO, lang.KbOpenDocument())),
 		ToggleUnits: key.NewBinding(
 			key.WithKeys(keyShiftU),
-			key.WithHelp(keyShiftU, "toggle units"),
+			key.WithHelp(keyShiftU, lang.KbToggleUnits()),
 		),
-		Chat: key.NewBinding(key.WithKeys(keyAt), key.WithHelp(keyAt, "ask LLM")),
+		Chat: key.NewBinding(key.WithKeys(keyAt), key.WithHelp(keyAt, lang.KbAskLLM())),
 		Escape: key.NewBinding(
 			key.WithKeys(keyEsc),
-			key.WithHelp("esc", "close detail / clear status"),
+			key.WithHelp("esc", lang.KbCloseDetailClear()),
 		),
-		YankCell: key.NewBinding(key.WithKeys(keyY), key.WithHelp(keyY, "copy cell")),
+		YankCell: key.NewBinding(key.WithKeys(keyY), key.WithHelp(keyY, lang.KbCopyCell())),
 
 		// Edit mode
-		Add: key.NewBinding(key.WithKeys(keyA), key.WithHelp(keyA, "add entry")),
+		Add: key.NewBinding(key.WithKeys(keyA), key.WithHelp(keyA, lang.KbAddEntry())),
 		QuickAdd: key.NewBinding(
 			key.WithKeys(keyShiftA),
-			key.WithHelp(keyShiftA, "add document with extraction"),
+			key.WithHelp(keyShiftA, lang.KbAddDocExtract()),
 		),
-		EditCell: key.NewBinding(key.WithKeys(keyE), key.WithHelp(keyE, "edit cell or row")),
+		EditCell: key.NewBinding(key.WithKeys(keyE), key.WithHelp(keyE, lang.KbEditCellRow())),
 		EditFull: key.NewBinding(
 			key.WithKeys(keyShiftE),
-			key.WithHelp(keyShiftE, "edit row (full form)"),
+			key.WithHelp(keyShiftE, lang.KbEditRowFull()),
 		),
-		Delete: key.NewBinding(key.WithKeys(keyD), key.WithHelp(keyD, "del/restore")),
+		Delete: key.NewBinding(key.WithKeys(keyD), key.WithHelp(keyD, lang.KbDelRestore())),
 		HardDelete: key.NewBinding(
 			key.WithKeys(keyShiftD),
-			key.WithHelp(keyShiftD, "permanently delete"),
+			key.WithHelp(keyShiftD, lang.KbPermanentlyDelete()),
 		),
-		ReExtract:   key.NewBinding(key.WithKeys(keyR), key.WithHelp(keyR, "re-extract")),
-		ShowDeleted: key.NewBinding(key.WithKeys(keyX), key.WithHelp(keyX, "show deleted")),
-		HouseEdit:   key.NewBinding(key.WithKeys(keyP), key.WithHelp(keyP, "house profile")),
-		ExitEdit:    key.NewBinding(key.WithKeys(keyEsc), key.WithHelp("esc", "nav mode")),
+		ReExtract:   key.NewBinding(key.WithKeys(keyR), key.WithHelp(keyR, lang.KbReExtract())),
+		ShowDeleted: key.NewBinding(key.WithKeys(keyX), key.WithHelp(keyX, lang.KbShowDeleted())),
+		HouseEdit:   key.NewBinding(key.WithKeys(keyP), key.WithHelp(keyP, lang.KbHouseProfile())),
+		ExitEdit:    key.NewBinding(key.WithKeys(keyEsc), key.WithHelp("esc", lang.KbNavMode())),
 
 		// Forms
-		FormSave:      key.NewBinding(key.WithKeys(keyCtrlS), key.WithHelp("ctrl+s", "save")),
-		FormCancel:    key.NewBinding(key.WithKeys(keyEsc), key.WithHelp("esc", "cancel")),
-		FormNextField: key.NewBinding(key.WithHelp("tab", "next field")),
-		FormPrevField: key.NewBinding(key.WithHelp("shift+tab", "previous field")),
+		FormSave:      key.NewBinding(key.WithKeys(keyCtrlS), key.WithHelp("ctrl+s", lang.KbSave())),
+		FormCancel:    key.NewBinding(key.WithKeys(keyEsc), key.WithHelp("esc", lang.KbCancel())),
+		FormNextField: key.NewBinding(key.WithHelp("tab", lang.KbNextField())),
+		FormPrevField: key.NewBinding(key.WithHelp("shift+tab", lang.KbPrevField())),
 		FormEditor: key.NewBinding(
 			key.WithKeys(keyCtrlE),
-			key.WithHelp("ctrl+e", "open notes in $EDITOR"),
+			key.WithHelp("ctrl+e", lang.KbOpenNotesEditor()),
 		),
 		FormHiddenFiles: key.NewBinding(
 			key.WithKeys(keyShiftH),
-			key.WithHelp(keyShiftH, "toggle hidden files"),
+			key.WithHelp(keyShiftH, lang.KbToggleHiddenFiles()),
 		),
 
 		// Chat
 		ChatSend: key.NewBinding(
 			key.WithKeys(keyEnter),
-			key.WithHelp(symReturn, "send message"),
+			key.WithHelp(symReturn, lang.KbSendMessage()),
 		),
 		ChatToggleSQL: key.NewBinding(
 			key.WithKeys(keyCtrlS),
-			key.WithHelp("ctrl+s", "toggle SQL display"),
+			key.WithHelp("ctrl+s", lang.KbToggleSQLDisplay()),
 		),
 		ChatHistoryUp: key.NewBinding(
 			key.WithKeys(keyUp, keyCtrlP),
-			key.WithHelp(symUp+"/"+symDown, "prompt history"),
+			key.WithHelp(symUp+"/"+symDown, lang.KbPromptHistory()),
 		),
 		ChatHistoryDn: key.NewBinding(key.WithKeys(keyDown, keyCtrlN)),
-		ChatHide:      key.NewBinding(key.WithKeys(keyEsc), key.WithHelp("esc", "hide chat")),
+		ChatHide:      key.NewBinding(key.WithKeys(keyEsc), key.WithHelp("esc", lang.KbHideChat())),
 
 		// Chat completer
 		CompleterUp:      key.NewBinding(key.WithKeys(keyUp, keyCtrlP)),
@@ -485,7 +492,7 @@ func (m *Model) editModeShortHelp() []key.Binding {
 	if m.effectiveTab().isDocumentTab() {
 		bindings = append(bindings, key.NewBinding(
 			key.WithKeys(keyA, keyShiftA),
-			key.WithHelp(keyA+"/"+keyShiftA, "add"),
+			key.WithHelp(keyA+"/"+keyShiftA, i18n.Get().KbAdd()),
 		))
 	} else {
 		bindings = append(bindings, m.keys.Add)

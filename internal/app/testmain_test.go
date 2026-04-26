@@ -12,6 +12,8 @@ import (
 	"testing"
 
 	"github.com/micasa-dev/micasa/internal/data"
+	"github.com/micasa-dev/micasa/internal/i18n"
+	"golang.org/x/text/language"
 )
 
 // testSeed is the base seed for all faker instances in this package's tests.
@@ -59,6 +61,7 @@ func createTemplateBytes() error {
 }
 
 func TestMain(m *testing.M) {
+	i18n.Get().SetLanguage(language.English)
 	if s := os.Getenv("MICASA_TEST_SEED"); s != "" {
 		v, err := strconv.ParseUint(s, 10, 64)
 		if err != nil {

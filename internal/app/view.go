@@ -170,9 +170,10 @@ func (m *Model) buildDashboardOverlay() string {
 	header := m.dashboardHeader()
 
 	// Minimal hints inside the overlay.
+	dashLang := i18n.Get()
 	hintParts := []string{
-		m.helpItem(keyShiftD, "close"),
-		m.helpItem(keyQuestion, "help"),
+		m.helpItem(keyShiftD, dashLang.SbClose()),
+		m.helpItem(keyQuestion, dashLang.KbHelp()),
 	}
 	if m.dash.flash != "" {
 		hintParts = append(hintParts, m.styles.DashHouseValue().Render(m.dash.flash))
@@ -282,43 +283,45 @@ func (m *Model) statusView() string {
 	if m.inlineInput != nil {
 		return m.withPullProgress(m.inlineInputStatusView())
 	}
+	svLang := i18n.Get()
 	if m.confirm == confirmHardDelete {
-		entity := "incident"
+		var prompt string
 		if tab := m.effectiveTab(); tab != nil && tab.Kind == tabMaintenance {
-			entity = "item"
+			prompt = m.styles.FormDirty().Render(svLang.SbPermDeleteItem())
+		} else {
+			prompt = m.styles.FormDirty().Render(svLang.SbPermDeleteEntity())
 		}
-		prompt := m.styles.FormDirty().Render("Permanently delete this " + entity + "?")
 		hints := joinWithSeparator(
 			m.helpSeparator(),
-			m.helpItem(keyY, "delete forever"),
-			m.helpItem(keyN, "cancel"),
+			m.helpItem(keyY, svLang.SbDeleteForever()),
+			m.helpItem(keyN, svLang.HelpCancel()),
 		)
 		return m.withPullProgress(prompt + "  " + hints)
 	}
 	if m.mode == modeForm {
 		if m.confirm.isFormConfirm() {
-			prompt := m.styles.FormDirty().Render("Discard unsaved changes?")
+			prompt := m.styles.FormDirty().Render(svLang.SbDiscardChanges())
 			hints := joinWithSeparator(
 				m.helpSeparator(),
-				m.helpItem(keyY, "discard"),
-				m.helpItem(keyN, "keep editing"),
+				m.helpItem(keyY, svLang.SbDiscard()),
+				m.helpItem(keyN, svLang.SbKeepEditing()),
 			)
 			return m.withPullProgress(prompt + "  " + hints)
 		}
-		dirtyIndicator := m.styles.FormClean().Render("○ saved")
+		dirtyIndicator := m.styles.FormClean().Render(svLang.SbSaved())
 		if m.fs.formDirty {
-			dirtyIndicator = m.styles.FormDirty().Render("● unsaved")
+			dirtyIndicator = m.styles.FormDirty().Render(svLang.SbUnsaved())
 		}
 		parts := []string{
 			dirtyIndicator,
-			m.helpItem(keyCtrlS, "save"),
+			m.helpItem(keyCtrlS, svLang.KbSave()),
 		}
 		if m.fs.notesEditMode {
-			parts = append(parts, m.helpItem(keyCtrlE, "editor"))
+			parts = append(parts, m.helpItem(keyCtrlE, svLang.SbEditor()))
 		}
 		parts = append(parts,
-			m.helpItem(keyEsc, "cancel"),
-			m.helpItem(keyCtrlQ, "quit"),
+			m.helpItem(keyEsc, svLang.KbCancel()),
+			m.helpItem(keyCtrlQ, svLang.KbQuit()),
 		)
 		help := joinWithSeparator(m.helpSeparator(), parts...)
 		return m.withPullProgress(m.withStatusMessage(help))
@@ -332,18 +335,18 @@ func (m *Model) statusView() string {
 
 	// Both badges render at the same width to prevent layout shift.
 	// Anchor to the wider label so the narrower one gets padded, not squeezed.
-	navW := lipgloss.Width(m.styles.ModeNormal().Render("NAV"))
-	editW := lipgloss.Width(m.styles.ModeEdit().Render("EDIT"))
+	navW := lipgloss.Width(m.styles.ModeNormal().Render(svLang.SbNavBadge()))
+	editW := lipgloss.Width(m.styles.ModeEdit().Render(svLang.SbEditBadge()))
 	badgeWidth := max(navW, editW)
 	modeBadge := m.styles.ModeNormal().
 		Width(badgeWidth).
 		Align(lipgloss.Center).
-		Render("NAV")
+		Render(svLang.SbNavBadge())
 	if m.mode == modeEdit {
 		modeBadge = m.styles.ModeEdit().
 			Width(badgeWidth).
 			Align(lipgloss.Center).
-			Render("EDIT")
+			Render(svLang.SbEditBadge())
 	}
 
 	help := m.modeStatusHelp(modeBadge)
@@ -369,15 +372,16 @@ func (m *Model) withBgExtractionIndicator(statusOutput string) string {
 		}
 	}
 	var parts []string
+	bgLang := i18n.Get()
 	if running > 0 {
 		sp := m.ex.bgExtractions[0].Spinner.View()
 		parts = append(parts, appStyles.AccentText().Render(
-			fmt.Sprintf("%s %d extracting", sp, running),
+			sp+" "+fmt.Sprintf(bgLang.SbExtracting(), running),
 		))
 	}
 	if ready > 0 {
 		parts = append(parts, appStyles.AccentText().Render(
-			fmt.Sprintf("%d ready", ready),
+			fmt.Sprintf(bgLang.SbReady(), ready),
 		))
 	}
 	indicator := strings.Join(parts, "  ")
@@ -386,12 +390,13 @@ func (m *Model) withBgExtractionIndicator(statusOutput string) string {
 
 func (m *Model) inlineInputStatusView() string {
 	ii := m.inlineInput
+	iiLang := i18n.Get()
 	title := m.styles.HeaderLabel().Render(ii.Title + ":")
 	input := ii.Input.View()
 	hints := joinWithSeparator(
 		m.helpSeparator(),
-		m.helpItem(symReturn, "save"),
-		m.helpItem(keyEsc, "cancel"),
+		m.helpItem(symReturn, iiLang.KbSave()),
+		m.helpItem(keyEsc, iiLang.KbCancel()),
 	)
 	prompt := title + " " + input + "  " + hints
 	return m.withStatusMessage(prompt)
@@ -490,30 +495,32 @@ func (m *Model) withPullProgress(statusOutput string) string {
 }
 
 func (m *Model) editHint() string {
+	ehLang := i18n.Get()
 	tab := m.effectiveTab()
 	if tab == nil {
-		return "edit"
+		return ehLang.SbEdit()
 	}
 	col := tab.ColCursor
 	if col < 0 || col >= len(tab.Specs) {
-		return "edit"
+		return ehLang.SbEdit()
 	}
 	spec := tab.Specs[col]
 	// Show "follow link" hint when on a linked cell with a target.
 	if spec.Link != nil || spec.Kind == cellEntity {
 		if c, ok := m.selectedCell(col); ok && c.LinkID != "" {
-			return "follow " + linkArrow
+			return ehLang.SbFollowLink() + " " + linkArrow
 		}
 	}
 	if spec.Kind == cellReadonly {
-		return "edit"
+		return ehLang.SbEdit()
 	}
-	return "edit: " + spec.Title
+	return ehLang.SbEditColon() + spec.Title
 }
 
 // enterHint returns a contextual label for the enter key in Normal mode,
 // or "" if enter has no action on the current column.
 func (m *Model) enterHint() string {
+	ehLang := i18n.Get()
 	tab := m.effectiveTab()
 	if tab == nil {
 		return ""
@@ -524,17 +531,17 @@ func (m *Model) enterHint() string {
 	}
 	spec := tab.Specs[col]
 	if spec.Kind == cellNotes {
-		return "preview"
+		return ehLang.SbPreview()
 	}
 	if spec.Kind == cellOps {
-		return "ops"
+		return ehLang.SbOps()
 	}
 	if spec.Kind == cellDrilldown {
 		return m.drilldownHint(tab, spec)
 	}
 	if spec.Link != nil || spec.Kind == cellEntity {
 		if c, ok := m.selectedCell(col); ok && c.LinkID != "" {
-			return "follow " + linkArrow
+			return ehLang.SbFollowLink() + " " + linkArrow
 		}
 	}
 	return ""
@@ -543,7 +550,7 @@ func (m *Model) enterHint() string {
 // drilldownHint returns a short label for the drilldown target based on the
 // current tab and column. Used in status bar hints.
 func (m *Model) drilldownHint(_ *Tab, _ columnSpec) string {
-	return drilldownArrow + " drill"
+	return drilldownArrow + " " + i18n.Get().SbDrill()
 }
 
 func (m *Model) formFullScreen() string {
@@ -568,9 +575,10 @@ func (m *Model) buildNotePreviewOverlay() string {
 	contentW := m.overlayContentWidth()
 
 	var b strings.Builder
+	npLang := i18n.Get()
 	title := m.notePreview.title
 	if title == "" {
-		title = "Notes"
+		title = npLang.FldNotes()
 	}
 	b.WriteString(m.styles.HeaderSection().Render(" " + title + " "))
 	b.WriteString("\n\n")
@@ -581,7 +589,7 @@ func (m *Model) buildNotePreviewOverlay() string {
 	b.WriteString(wordWrap(text, innerW))
 	b.WriteString("\n\n")
 
-	b.WriteString(m.styles.HeaderHint().Render("Press any key to close"))
+	b.WriteString(m.styles.HeaderHint().Render(npLang.SbPressAnyKeyToClose()))
 
 	return m.styles.OverlayBox().
 		Width(contentW).
@@ -1055,26 +1063,22 @@ func truncateLeft(s string, maxW int) string {
 // the generic top-level message.
 func (m *Model) emptyHint(tab *Tab) string {
 	if m.inDetail() {
-		return fmt.Sprintf("No %s for this %s yet. Press i for edit mode, then a to add one.",
+		return fmt.Sprintf(i18n.Get().EmptyDetailHint(),
 			strings.ToLower(tab.Name), tab.Kind.singular())
 	}
 	return topLevelEmptyHint(tab.Kind)
 }
 
 // topLevelEmptyHint returns the empty-state message for a top-level tab.
-var emptyHintOverrides = map[TabKind]string{
-	tabQuotes:    "No quotes yet. Create a project first, then drill in and add a quote.",
-	tabDocuments: "No documents yet.",
-}
-
 func topLevelEmptyHint(kind TabKind) string {
-	if hint, ok := emptyHintOverrides[kind]; ok {
-		return hint
+	lang := i18n.Get()
+	switch kind {
+	case tabQuotes:
+		return lang.EmptyNoQuotesYet()
+	case tabDocuments:
+		return lang.EmptyNoDocsYet()
 	}
-	return fmt.Sprintf(
-		"No %s yet. Press i for edit mode, then a to add one. ? for help.",
-		kind.plural(),
-	)
+	return fmt.Sprintf(lang.EmptyTopLevelHint(), kind.plural())
 }
 
 // glamourStyle caches the glamour style config at init time so

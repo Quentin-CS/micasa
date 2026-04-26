@@ -267,6 +267,82 @@ type translations struct {
 	helpCollapse string
 	helpTabs     string
 
+	// Keybinding labels (status bar + help overlay)
+	kbQuit               string
+	kbCancelLLM          string
+	kbColumns            string
+	kbFirstLastCol       string
+	kbHelp               string
+	kbHouseProfile       string
+	kbSwitchTabs         string
+	kbFirstLastTab       string
+	kbEditMode           string
+	kbDrillFollowPreview string
+	kbSummary            string
+	kbSortClear          string
+	kbToggleSettled      string
+	kbPinUnpin           string
+	kbToggleFilter       string
+	kbClearPinsFilter    string
+	kbInvertFilter       string
+	kbToggleColVis       string
+	kbFindColumn         string
+	kbSearchDocs         string
+	kbOpenDocument       string
+	kbToggleUnits        string
+	kbAskLLM             string
+	kbCloseDetailClear   string
+	kbCopyCell           string
+	kbAddEntry           string
+	kbAddDocExtract      string
+	kbEditCellRow        string
+	kbEditRowFull        string
+	kbDelRestore         string
+	kbPermanentlyDelete  string
+	kbReExtract          string
+	kbShowDeleted        string
+	kbNavMode            string
+	kbSave               string
+	kbCancel             string
+	kbNextField          string
+	kbPrevField          string
+	kbOpenNotesEditor    string
+	kbToggleHiddenFiles  string
+	kbSendMessage        string
+	kbToggleSQLDisplay   string
+	kbPromptHistory      string
+	kbHideChat           string
+	kbAdd                string
+
+	// Empty state messages
+	emptyDetailHint   string
+	emptyTopLevelHint string
+	emptyNoDocsYet    string
+	emptyNoQuotesYet  string
+
+	// Status bar labels
+	sbNavBadge           string
+	sbEditBadge          string
+	sbSaved              string
+	sbUnsaved            string
+	sbDeleteForever      string
+	sbDiscardChanges     string
+	sbDiscard            string
+	sbKeepEditing        string
+	sbPermDeleteEntity   string
+	sbPermDeleteItem     string
+	sbEditor             string
+	sbFollowLink         string
+	sbEdit               string
+	sbEditColon          string
+	sbPreview            string
+	sbOps                string
+	sbDrill              string
+	sbPressAnyKeyToClose string
+	sbClose              string
+	sbExtracting         string
+	sbReady              string
+
 	// Error messages
 	errNoActiveTab           string
 	errNothingSelected       string

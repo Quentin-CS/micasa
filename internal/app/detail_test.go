@@ -11,6 +11,7 @@ import (
 	"charm.land/bubbles/v2/table"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/micasa-dev/micasa/internal/data"
+	"github.com/micasa-dev/micasa/internal/i18n"
 	"github.com/micasa-dev/micasa/internal/locale"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -826,7 +827,7 @@ func TestDrilldownHint(t *testing.T) {
 	m := newTestModel(t)
 	tab := &Tab{Kind: tabProjects}
 	spec := columnSpec{Title: "Quotes"}
-	assert.Equal(t, drilldownArrow+" drill", m.drilldownHint(tab, spec))
+	assert.Equal(t, drilldownArrow+" "+i18n.Get().SbDrill(), m.drilldownHint(tab, spec))
 }
 
 func TestNavigateToLinkClosesDetailStack(t *testing.T) {

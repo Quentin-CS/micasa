@@ -4,6 +4,7 @@
 package app
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -34,7 +35,7 @@ func TestQuoteHandlerStartAddFormRequiresProject(t *testing.T) {
 	h := newQuoteHandler()
 	err := h.StartAddForm(m)
 	require.Error(t, err, "should fail without projects")
-	assert.Contains(t, err.Error(), "project")
+	assert.Contains(t, strings.ToLower(err.Error()), "project")
 }
 
 func TestQuoteHandlerStartAddFormWithProject(t *testing.T) {
